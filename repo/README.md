@@ -18,26 +18,72 @@ Plataforma web educativa que enseña conceptos de **Inteligencia Artificial a es
 
 ```
 proyecto-DanielLondono/
-├── src/                          # Código fuente del framework
+├── src/                          # Backend Node.js + Express + Sequelize
+│   ├── config/database.js        # Conexión Sequelize → PostgreSQL
+│   ├── models/                   # 12 modelos ORM con asociaciones
+│   ├── routes/index.js           # CRUD REST de las 12 entidades
+│   ├── middleware/errorHandler.js
+│   ├── utils/crudFactory.js      # CRUD genérico reutilizable
+│   └── server.js                 # Entry point del API
 ├── docs/
 │   ├── analisis/                 # Secciones 1-7 del trabajo
-│   │   ├── 01-planteamiento-problema.md
-│   │   ├── 02-espina-de-pescado.md
-│   │   ├── 03-alcance.md
-│   │   ├── 04-objetivo-general.md
-│   │   ├── 05-objetivos-especificos.md
-│   │   ├── 06-tecnicas-elicitacion.md
-│   │   └── 07-casos-de-uso.md
-│   ├── diseño/                   # Sección 8 — Fase de Diseño
+│   ├── diseño/
 │   │   ├── fase1-arquitectura/   # E1-E6
 │   │   ├── fase2-datos/          # E7-E11 + script DDL .sql
 │   │   ├── fase3-componentes/    # E12-E14
 │   │   ├── fase4-interfaz/       # E15-E17
 │   │   └── imagenes/             # 14 diagramas PNG
 │   └── trazabilidad/             # Sección 9 — 13 matrices (M1-M13)
+├── package.json
+├── .env.example
+├── DECISIONES.md                 # Bitácora de decisiones técnicas
 ├── README.md
 └── BITACORA.md
 ```
+
+---
+
+## Cómo correr el backend
+
+Requisitos: Node.js ≥ 18 y PostgreSQL 15.
+
+```bash
+# 1. Instalar dependencias
+npm install
+
+# 2. Configurar variables (copia .env.example → .env y ajusta credenciales)
+cp .env.example .env
+
+# 3. Crear la base de datos y aplicar el DDL
+createdb ia_k12
+psql -d ia_k12 -f docs/diseño/fase2-datos/E11-script-DDL.sql
+
+# 4. Levantar el servidor
+npm run dev          # con nodemon
+# ó
+npm start
+```
+
+API disponible en `http://localhost:3000/api`. Health check: `GET /api/health`.
+
+### Endpoints CRUD disponibles
+
+| Recurso | Tipo | Ruta |
+|---|---|---|
+| Roles | maestra | `/api/roles` |
+| Niveles educativos | maestra | `/api/niveles-educativos` |
+| Tipos de contenido | maestra | `/api/tipos-contenido` |
+| Tipos de actividad | maestra | `/api/tipos-actividad` |
+| Instituciones | maestra | `/api/instituciones` |
+| Usuarios | transaccional | `/api/usuarios` |
+| Matrículas | transaccional | `/api/matriculas` |
+| Módulos | transaccional | `/api/modulos` |
+| Actividades | transaccional | `/api/actividades` |
+| Progreso de estudiantes | transaccional | `/api/progresos` |
+| Historial de práctica | transaccional | `/api/historiales` |
+| Reportes | transaccional | `/api/reportes` |
+
+Cada recurso expone `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id`.
 
 ---
 

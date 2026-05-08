@@ -23,6 +23,17 @@
 
 ---
 
+## Programación con Framework — Trabajo Parcial 1 (2026)
+
+| Semana | Fecha | Actividad Realizada | Estado |
+|--------|-------|--------------------|---------|
+| 1 | 2026-04-17 | Framework Express + Sequelize corriendo, estructura `src/`, README y bitácora | ✅ Completo |
+| 2 | 2026-04-25 | Base de datos creada desde DDL, 12 modelos ORM con asociaciones (FKs y aliases) | ✅ Completo |
+| 3 | 2026-05-02 | CRUD de tablas maestras (ROL, NIVEL_EDUCATIVO, TIPO_CONTENIDO, TIPO_ACTIVIDAD, INSTITUCION) + DECISIONES.md con 4 entradas | ✅ Completo |
+| 4 | 2026-05-09 | CRUD de tablas transaccionales (USUARIO, MATRICULA, MODULO, ACTIVIDAD, PROGRESO_ESTUDIANTE, HISTORIAL_PRACTICA, REPORTE) con FKs activas | ✅ Completo |
+
+---
+
 ## Correcciones Aplicadas
 
 | Fecha | Corrección | Archivo Afectado |

@@ -1,0 +1,2532 @@
+ALFABETIZACIÓN EN INTELIGENCIA ARTIFICIAL PARA K-12
+Documento Integrado Completo — Trabajo Parcial N.° 1
+Ingeniería de Software 2025
+Repositorio: https://github.com/DanielLondono0314/ingenieriadesoftware2
+
+Sección
+Nombre
+Contenido
+1
+Planteamiento del problema
+Descripción del problema, contexto y justificación
+2
+Espina de pescado
+Diagrama Ishikawa — causas de la deficiente alfabetización en IA
+3
+Alcance
+Límites del sistema: qué incluye y qué excluye
+4
+Objetivo general
+Meta principal del proyecto
+5
+Objetivos específicos
+Metas derivadas de cada fase del diseño
+6
+Técnicas de elicitación
+Métodos usados para levantar requisitos
+7
+Casos de uso
+CU-001 a CU-005 con flujos completos
+8
+Fase de Diseño (E1–E17)
+17 entregables en 4 fases + 14 diagramas embebidos
+9
+Artefactos de trazabilidad
+14 matrices que conectan todos los entregables
+10
+Resultados de los prompts
+Tabla de prompts usados y entregables generados
+
+1. PLANTEAMIENTO DEL PROBLEMA
+1.1 Contexto
+La Inteligencia Artificial (IA) está transformando aceleradamente todos los sectores de la sociedad: medicina, educación, transporte, industria y entretenimiento. Sin embargo, en Colombia y en la mayoría de los países latinoamericanos, los estudiantes de educación básica y media (K-12) terminan su ciclo escolar sin ningún conocimiento sobre qué es la IA, cómo funciona, ni cómo impactará su vida profesional y cotidiana.
+
+Esta brecha formativa no es solo un problema académico — es un problema de equidad y competitividad. Los jóvenes que no comprendan los fundamentos de la IA quedarán en desventaja en un mercado laboral que ya exige estas competencias como base.
+
+1.2 Descripción del Problema
+Las instituciones educativas K-12 carecen de una plataforma digital estructurada, accesible y adaptada pedagógicamente que permita enseñar conceptos de Inteligencia Artificial de forma interactiva. Los docentes no cuentan con herramientas para crear, asignar y evaluar actividades de IA, ni para hacer seguimiento del progreso individual de sus estudiantes. Los administradores no tienen mecanismos para gestionar el contenido educativo ni para generar reportes de desempeño académico.
+
+1.3 Pregunta de Investigación
+¿Cómo diseñar e implementar una plataforma web que permita la alfabetización en Inteligencia Artificial para estudiantes K-12, garantizando la gestión pedagógica por parte de docentes y administradores, el seguimiento del progreso individualizado y la retroalimentación inmediata al estudiante?
+
+1.4 Justificación
+• Colombia enfrenta una brecha digital significativa en competencias tecnológicas avanzadas que impacta la competitividad del país.
+• Los estándares internacionales (UNESCO, OCDE) recomiendan incluir alfabetización en IA desde la educación básica.
+• Los docentes necesitan herramientas concretas para enseñar IA sin requerir formación avanzada en programación.
+• Una plataforma centralizada permite escalar la enseñanza de IA a múltiples instituciones con diferentes niveles educativos.
+• El seguimiento del progreso permite identificar estudiantes en riesgo y adaptar la enseñanza de manera oportuna.
+
+2. ESPINA DE PESCADO (DIAGRAMA DE ISHIKAWA)
+El Diagrama de Ishikawa (espina de pescado) identifica las causas raíz del problema central: la deficiente alfabetización en IA en estudiantes K-12. Las causas se organizan en 6 categorías (6M adaptadas al contexto educativo).
+
+Problema central: Deficiente alfabetización en Inteligencia Artificial en estudiantes K-12
+
+Figura 0: Diagrama de Ishikawa — Causas de la deficiente alfabetización en IA en K-12
+
+2.1 Análisis de Causas por Categoría
+Categoría
+Causa Principal
+Causas Secundarias Identificadas
+MÉTODOS DE ENSEÑANZA
+Clases magistrales sin práctica
+Sin evaluación formativa continua · No se adapta al nivel del estudiante · Ausencia de retroalimentación inmediata · Metodologías pasivas sin interacción
+MATERIAL DIDÁCTICO
+Sin contenido IA adaptado a K-12
+Recursos en idioma extranjero · Materiales desactualizados · Sin ejemplos del contexto local · Ausencia de contenido multimedia interactivo
+TECNOLOGÍA E INFRAESTRUCTURA
+Sin plataformas educativas de IA
+Conectividad limitada en colegios · Dispositivos insuficientes · Barreras de acceso digital · Incompatibilidad con dispositivos móviles
+DOCENTES
+Formación insuficiente en IA
+Sin herramientas de seguimiento · Alta carga académica · Resistencia al cambio tecnológico · Sin tiempo para crear materiales de IA
+INSTITUCIÓN EDUCATIVA
+Currículo no incluye IA en K-12
+Sin presupuesto para tecnología · Falta de políticas TIC actualizadas · Sin apoyo directivo · Ausencia de programas de formación docente en IA
+ESTUDIANTES
+Desmotivación por métodos pasivos
+Sin referentes de IA en su entorno · Brechas en competencias digitales · Acceso desigual a internet en casa · Percepción de que la IA es solo para expertos
+
+3. ALCANCE DEL SISTEMA
+3.1 Alcance Funcional — Lo que SÍ incluye el sistema
+Área
+Descripción del Alcance
+Gestión de usuarios
+Registro, autenticación, modificación, desactivación y gestión de roles para Estudiantes K-12, Docentes y Administradores. Matrícula en instituciones educativas.
+Gestión de contenidos
+Creación, consulta, modificación y eliminación de módulos educativos sobre IA, organizados por nivel educativo (K-12) y tipo de contenido (Fundamentos, Ética, Programación, Robótica).
+Actividades interactivas
+Creación y asignación de actividades pedagógicas (cuestionarios, simulaciones, ejercicios, debates). Ejecución interactiva con retroalimentación inmediata (&lt; 1s) y guardado automático del progreso.
+Seguimiento del aprendizaje
+Registro automático del progreso por actividad (PROGRESO_ESTUDIANTE) e historial por módulo (HISTORIAL_PRACTICA). Consulta en tiempo real por docentes.
+Reportes y exportación
+Generación de reportes individuales, grupales y globales en formato PDF o Excel. Descarga desde almacenamiento en nube (S3). Máximo 5 segundos para grupos de hasta 50 estudiantes.
+Seguridad
+Autenticación con hash bcrypt, bloqueo automático tras 5 intentos fallidos, log de seguridad, control de acceso por rol con permisos diferenciados.
+Accesibilidad y compatibilidad
+Interfaz responsiva (320px–1920px), compatible con Chrome, Firefox y Edge. Cumple WCAG 2.1 nivel AA.
+
+3.2 Alcance NO funcional — Lo que NO incluye el sistema
+Exclusión
+Justificación
+Videollamadas o comunicación en tiempo real (chat, videoconferencia)
+Fuera del alcance pedagógico definido. Existe plataformas especializadas (Zoom, Teams) para este fin.
+Pagos o transacciones financieras
+El sistema es de uso institucional gratuito. No requiere módulo de cobros.
+Integración con Moodle, Google Classroom o plataformas LMS externas
+Se diseña como sistema independiente para garantizar control total sobre los datos y la experiencia de usuario.
+Generación automática de contenido con IA generativa (ChatGPT, etc.)
+El contenido es creado y curado por docentes y administradores certificados para garantizar calidad pedagógica.
+Aplicación móvil nativa (Android/iOS)
+El diseño responsivo cubre dispositivos móviles sin necesidad de app nativa en esta versión.
+Autenticación biométrica o con redes sociales
+Se usa autenticación por correo y contraseña con bcrypt para máxima seguridad y simplicidad institucional.
+
+4. OBJETIVO GENERAL
+Diseñar una plataforma web de alfabetización en Inteligencia Artificial para estudiantes K-12 que permita el aprendizaje interactivo mediante módulos y actividades pedagógicas adaptadas al nivel escolar, el seguimiento individualizado del progreso académico y la gestión integral del contenido educativo por parte de docentes y administradores, aplicando las metodologías de Ingeniería de Software para garantizar calidad, trazabilidad y escalabilidad del sistema.
+
+5. OBJETIVOS ESPECÍFICOS
+#
+Objetivo Específico
+Relación con el trabajo
+OE-01
+Levantar y documentar los requisitos funcionales y no funcionales del sistema mediante técnicas de elicitación formales.
+Sección 6 (Elicitación) + 18 HU + 23 RF + 15 RNF con métricas verificables.
+OE-02
+Definir la arquitectura del sistema mediante tablas de contexto, diagramas de arquetipos, componentes y despliegue que garanticen escalabilidad y seguridad.
+Fase 1: Entregables 1-6 + 4 diagramas PNG.
+OE-03
+Diseñar el modelo de datos normalizado a 3FN que garantice integridad referencial, elimine redundancias y soporte todos los requisitos funcionales del sistema.
+Fase 2: Entregables 7-11 + MER + DDL PostgreSQL.
+OE-04
+Modelar el comportamiento del sistema mediante diagramas de clases, secuencia y estados con trazabilidad completa hacia los casos de uso y requisitos.
+Fase 3: Entregables 12-14 + 7 diagramas PNG.
+OE-05
+Diseñar la interfaz de usuario mediante mapa de navegación, wireframes de baja fidelidad y prototipo interactivo de alta fidelidad que cumplan estándares de usabilidad y accesibilidad WCAG 2.1.
+Fase 4: Entregables 15-17 + 3 diagramas PNG.
+
+6. TÉCNICAS DE ELICITACIÓN DE REQUISITOS
+Para levantar los requisitos del sistema se aplicaron múltiples técnicas de elicitación complementarias. Cada técnica aportó información específica que se refleja en los artefactos del proyecto.
+
+Técnica
+Stakeholders Consultados
+Información Obtenida
+Artefactos Generados
+Entrevistas semiestructuradas
+Docentes de tecnología e informática, coordinadores académicos
+Necesidades pedagógicas, flujos de trabajo actuales, dolor en el seguimiento de estudiantes, herramientas existentes y sus limitaciones.
+HU-009 a HU-013 (rol Docente), RF-012 a RF-016, RNF-001, RNF-002
+Cuestionarios y encuestas
+Estudiantes K-12 (grados 6 a 11)
+Hábitos de estudio digital, dispositivos usados, motivación para aprender IA, dificultades con plataformas actuales.
+HU-001 a HU-008 (rol Estudiante), RNF-006, RNF-007, RNF-010
+Análisis de documentos
+Currículos escolares MEN, estándares UNESCO de IA en educación, plataformas similares (Khan Academy, Code.org)
+Niveles educativos K-12 y sus características, tipos de contenido IA pertinentes, estructura de módulos y actividades pedagógicas.
+Entidad NIVEL_EDUCATIVO, TIPO_CONTENIDO, TIPO_ACTIVIDAD, módulos temáticos
+Observación directa
+Clases de tecnología en instituciones educativas
+Interacción real estudiante-docente-herramienta, tiempos de respuesta esperados, contexto de uso en aula.
+RNF-001 (&lt; 3s), RNF-002 (&lt; 1s), RNF-009 (compatibilidad navegadores)
+Análisis de casos de uso
+Equipo de desarrollo + docentes
+Flujos completos de interacción usuario-sistema, precondiciones, postcondiciones, flujos alternativos y excepciones.
+CU-001 a CU-005, Diagramas de Secuencia DS-01 a DS-03
+Prototipado exploratorio
+Docentes y estudiantes piloto
+Validación temprana de la estructura de navegación, disposición de elementos en pantalla, claridad de las instrucciones.
+SCR-01 a SCR-35, Wireframes E16, Prototipo E17
+Revisión de protocolos de seguridad
+Administradores de sistemas institucionales
+Requisitos de autenticación, políticas de contraseñas, manejo de intentos fallidos, logs de seguridad.
+RNF-004, RNF-005, RF-005, RF-006
+
+7. CASOS DE USO
+Se identificaron 5 casos de uso principales que cubren los flujos más importantes del sistema. Cada uno sigue el formato IEEE 830 / Pressman con flujo normal, flujos alternativos y postcondiciones.
+
+7.1 Tabla Resumen de Casos de Uso
+ID
+Nombre
+Actor
+RF cubiertos
+Resumen flujo normal
+CU-001
+Realizar Actividad Interactiva de IA
+Estudiante K-12
+RF-013,RF-016,RF-017,RF-018 / RNF-002,RNF-012
+El estudiante selecciona una actividad, la ejecuta respondiendo preguntas, recibe retroalimentación inmediata en &lt; 1s y su progreso se guarda automáticamente.
+CU-002
+Registrar Usuario en el Sistema
+Administrador
+RF-001 / RNF-006,RNF-015
+El administrador completa el formulario de registro, el sistema valida unicidad de correo y campos obligatorios, genera hash bcrypt y guarda el nuevo usuario.
+CU-003
+Gestionar Módulo Educativo
+Administrador
+RF-007,RF-008,RF-009,RF-010
+El administrador crea, edita o desactiva módulos con tipo de contenido, nivel educativo y docente responsable asignados.
+CU-004
+Consultar Progreso de Estudiantes
+Docente
+RF-019 / RNF-001,RNF-002
+El docente accede al seguimiento del grupo, visualiza el progreso en tiempo real y puede ver el detalle individual de cada estudiante.
+CU-005
+Exportar Reporte de Progreso
+Docente / Administrador
+RF-022,RF-023 / RNF-013
+El usuario configura parámetros del reporte, el sistema consulta la BD, genera PDF/Excel, sube a S3 y retorna enlace de descarga en &lt; 5s.
+
+7.2 CU-001: Realizar Actividad Interactiva de IA (Caso Principal)
+Actor principal: Estudiante K-12
+Actores secundarios: Motor de Retroalimentación, Base de datos de progreso
+RF cubiertos: RF-013, RF-016, RF-017, RF-018 / RNF-002, RNF-012
+
+Precondiciones
+• El estudiante ha iniciado sesión con token JWT válido (RF-005).
+• Existe al menos un módulo activo con actividades asignadas al nivel del estudiante.
+• La actividad seleccionada está en estado PUBLICADA o ASIGNADA.
+
+Flujo Normal
+Paso
+Origen
+Destino
+Descripción
+1
+Estudiante
+Interfaz Web
+Selecciona una actividad del módulo disponible.
+2
+Interfaz Web
+ActividadService
+Solicita la carga de la actividad (id, instrucciones, puntaje máximo).
+3
+ActividadService
+BD 3FN
+Consulta datos completos de la actividad.
+4
+Interfaz Web
+Estudiante
+Muestra la actividad con instrucciones y contenido multimedia.
+5
+Estudiante
+Interfaz Web
+Envía una respuesta a una pregunta o ejercicio.
+6
+Interfaz Web
+Motor Retroalim.
+Evalúa la respuesta y calcula el puntaje parcial.
+7
+Motor Retroalim.
+Interfaz Web
+Retorna retroalimentación y puntaje en &lt; 1s (RNF-002).
+8
+Interfaz Web
+ProgresoService
+Guarda el avance automáticamente (RF-017, RNF-012).
+9
+Interfaz Web
+Estudiante
+Muestra retroalimentación y avanza a la siguiente pregunta.
+10
+ProgresoService
+BD 3FN
+Al completar: registra en HISTORIAL_PRACTICA (RF-018).
+
+Postcondiciones
+• El resultado queda registrado en HISTORIAL_PRACTICA (RF-018).
+• El PROGRESO_ESTUDIANTE se actualiza automáticamente (RF-017, RF-020).
+• El docente puede visualizar el resultado en tiempo real (RF-019).
+
+Flujos Alternativos
+A1 — Sesión expirada (&gt; 30 min): El sistema guarda el progreso parcial y redirige al login. Al reingresar, el estudiante retoma desde el último punto guardado (HU-008).
+A2 — Respuesta incorrecta: Muestra retroalimentación con el concepto correcto. Permite reintentar máximo 3 veces por pregunta.
+A3 — Actividad bloqueada: Muestra mensaje indicando que debe completar actividades previas del módulo.
+
+7.3 Resumen de Flujos Alternativos — Todos los CU
+CU
+Nombre
+Flujo Alt.
+Descripción del Flujo Alternativo
+CU-001
+Realizar Actividad Interactiva de IA
+Ver E13/E14
+A1: Sesión expirada — guarda parcial y redirige al login. A2: Respuesta incorrecta — retroalimentación y reintento (máx. 3). A3: Actividad bloqueada — mensaje de prerequisito.
+CU-002
+Registrar Usuario en el Sistema
+Ver E13/E14
+A1: Campo obligatorio vacío — error en línea. A2: Correo duplicado — mensaje de conflicto.
+CU-003
+Gestionar Módulo Educativo
+Ver E13/E14
+A1: Editar módulo existente — formulario pre-cargado. A2: Eliminar con historial — solo desactivación lógica para conservar historial.
+CU-004
+Consultar Progreso de Estudiantes
+Ver E13/E14
+A1: Sin datos — mensaje informativo. A2: Filtro por módulo — actualización en tiempo real (&lt; 3s).
+CU-005
+Exportar Reporte de Progreso
+Ver E13/E14
+A1: PDF — plantilla institucional. A2: Excel — con gráfica. A3: Grupo &gt; 50 — procesamiento asíncrono.
+
+8. FASE DE DISEÑO — ENTREGABLES 1 A 17
+
+8.0 Especificación de Requisitos (ERS)
+8.0.1 Historias de Usuario (HU-001 a HU-018)
+18 historias de usuario en formato ROL / ACCIÓN / BENEFICIO con trazabilidad a RF.
+
+ID
+Rol
+Historia de Usuario
+Beneficio
+RF Relacionado
+HU-001
+Estudiante K-12
+Como estudiante, quiero registrarme en la plataforma con mis datos básicos
+Para acceder a los módulos de aprendizaje de IA y llevar un historial personalizado.
+RF-001
+HU-002
+Estudiante K-12
+Como estudiante, quiero iniciar sesión con mi usuario y contraseña
+Para acceder de forma segura a mis actividades y progreso guardado.
+RF-002, RF-005
+HU-003
+Estudiante K-12
+Como estudiante, quiero explorar los módulos de conceptos básicos de IA
+Para comprender qué es la inteligencia artificial y cómo funciona de manera didáctica.
+RF-008, RF-011
+HU-004
+Estudiante K-12
+Como estudiante, quiero realizar actividades interactivas sobre IA
+Para aprender haciendo y reforzar los conceptos de forma práctica.
+RF-013, RF-016
+HU-005
+Estudiante K-12
+Como estudiante, quiero ver mi progreso y resultados de actividades
+Para evaluar mi avance y saber qué temas necesito reforzar.
+RF-018, RF-019, RF-020
+HU-006
+Estudiante K-12
+Como estudiante, quiero recibir retroalimentación inmediata en cada actividad
+Para corregir errores en el momento y mejorar mi comprensión.
+RF-016, RF-018
+HU-007
+Estudiante K-12
+Como estudiante, quiero ver explicaciones visuales y ejemplos de algoritmos de IA
+Para entender conceptos abstractos de forma gráfica y comprensible.
+RF-011
+HU-008
+Estudiante K-12
+Como estudiante, quiero guardar mis actividades y retomarlas después
+Para continuar mi aprendizaje sin perder el avance anterior.
+RF-017
+HU-009
+Docente
+Como docente, quiero registrar y gestionar mis estudiantes en la plataforma
+Para hacer seguimiento del progreso de cada uno y personalizar la enseñanza.
+RF-001, RF-002, RF-003
+HU-010
+Docente
+Como docente, quiero crear y asignar actividades sobre IA a mis estudiantes
+Para evaluar la comprensión de los temas y adaptar el ritmo de enseñanza.
+RF-012, RF-013
+HU-011
+Docente
+Como docente, quiero visualizar el desempeño de mis estudiantes en tiempo real
+Para identificar dificultades y brindar apoyo oportuno.
+RF-019
+HU-012
+Docente
+Como docente, quiero exportar reportes de progreso de mis estudiantes
+Para llevar registro académico y compartirlo con directivos o padres.
+RF-022
+HU-013
+Docente
+Como docente, quiero modificar o eliminar actividades asignadas
+Para actualizar el contenido según el avance del grupo.
+RF-014, RF-015
+HU-014
+Administrador
+Como administrador, quiero registrar nuevos usuarios (docentes y estudiantes)
+Para mantener actualizada la base de usuarios del sistema.
+RF-001
+HU-015
+Administrador
+Como administrador, quiero modificar y eliminar usuarios del sistema
+Para gestionar el acceso y mantener la seguridad de la plataforma.
+RF-003, RF-004
+HU-016
+Administrador
+Como administrador, quiero gestionar los módulos y contenidos de la plataforma
+Para mantener actualizado el material educativo sobre IA.
+RF-007, RF-008, RF-009, RF-010
+HU-017
+Administrador
+Como administrador, quiero generar reportes globales de uso y desempeño
+Para evaluar la efectividad de la plataforma y tomar decisiones de mejora.
+RF-021, RF-023
+HU-018
+Administrador
+Como administrador, quiero configurar roles y permisos del sistema
+Para garantizar que cada usuario acceda solo a las funciones que le corresponden.
+RF-006
+
+8.0.2 Requisitos Funcionales (RF-001 a RF-023)
+23 requisitos funcionales en 4 módulos con entidad afectada, prioridad y operación CRUD.
+
+Gestión de Usuarios (RF-001 a RF-006)
+ID
+Nombre
+Descripción
+HU
+Entidad
+Módulo
+Prior.
+CRUD
+RF-001
+Registrar Usuario (C)
+Permite registrar nuevos usuarios con nombre, correo, contraseña, rol y código de nivel educativo.
+HU-001,HU-014
+USUARIO
+Gest.Usuarios
+Alta
+CREATE
+RF-002
+Consultar Usuario (R)
+Permite buscar y listar usuarios por nombre, rol o estado activo/inactivo.
+HU-002,HU-014
+USUARIO
+Gest.Usuarios
+Alta
+READ
+RF-003
+Modificar Usuario (U)
+Permite editar los datos de un usuario existente (nombre, correo, rol, contraseña).
+HU-009,HU-015
+USUARIO
+Gest.Usuarios
+Alta
+UPDATE
+RF-004
+Eliminar/Desactivar (D)
+Permite eliminar o desactivar usuarios sin borrar su historial académico.
+HU-015
+USUARIO
+Gest.Usuarios
+Media
+DELETE
+RF-005
+Autenticación
+Valida credenciales para permitir el acceso según el rol asignado.
+HU-002
+USUARIO
+Gest.Usuarios
+Alta
+READ
+RF-006
+Gestión de Roles
+Permite asignar y modificar roles con permisos diferenciados.
+HU-018
+ROL
+Gest.Usuarios
+Alta
+UPDATE
+
+Gestión de Contenidos de IA (RF-007 a RF-011)
+ID
+Nombre
+Descripción
+HU
+Entidad
+Módulo
+Prior.
+CRUD
+RF-007
+Crear Módulo (C)
+El administrador puede crear módulos con título, nivel y tipo de contenido.
+HU-016
+MÓDULO
+Gest.Contenidos
+Alta
+CREATE
+RF-008
+Consultar Módulos (R)
+Lista todos los módulos con filtros por nivel, tipo y estado.
+HU-003,HU-016
+MÓDULO
+Gest.Contenidos
+Alta
+READ
+RF-009
+Modificar Módulo (U)
+El administrador puede editar título, nivel o tipo de un módulo.
+HU-016
+MÓDULO
+Gest.Contenidos
+Media
+UPDATE
+RF-010
+Eliminar Módulo (D)
+El administrador puede eliminar módulos desactualizados.
+HU-016
+MÓDULO
+Gest.Contenidos
+Baja
+DELETE
+RF-011
+Visualización Interactiva
+Muestra explicaciones visuales y animadas de conceptos de IA.
+HU-003,HU-007
+MÓDULO
+Gest.Contenidos
+Alta
+READ
+
+Gestión de Actividades (RF-012 a RF-017)
+ID
+Nombre
+Descripción
+HU
+Entidad
+Módulo
+Prior.
+CRUD
+RF-012
+Crear Actividad (C)
+El docente puede crear actividades con tipo, instrucciones y criterio de evaluación.
+HU-010
+ACTIVIDAD
+Gest.Actividades
+Alta
+CREATE
+RF-013
+Consultar Actividades (R)
+Lista actividades disponibles según nivel y módulo del estudiante.
+HU-004,HU-010
+ACTIVIDAD
+Gest.Actividades
+Alta
+READ
+RF-014
+Modificar Actividad (U)
+El docente puede editar instrucciones y criterios de una actividad.
+HU-013
+ACTIVIDAD
+Gest.Actividades
+Media
+UPDATE
+RF-015
+Eliminar Actividad (D)
+El docente puede eliminar actividades no pertinentes para el grupo.
+HU-013
+ACTIVIDAD
+Gest.Actividades
+Media
+DELETE
+RF-016
+Ejecutar Actividad
+El estudiante realiza actividades con retroalimentación inmediata.
+HU-004,HU-006
+ACTIVIDAD
+Gest.Actividades
+Alta
+READ/UPDATE
+RF-017
+Guardar Progreso
+El sistema guarda automáticamente el avance en cada actividad.
+HU-008
+PROGRESO
+Gest.Actividades
+Alta
+CREATE/UPDATE
+
+Progreso e Historial (RF-018 a RF-023)
+ID
+Nombre
+Descripción
+HU
+Entidad
+Módulo
+Prior.
+CRUD
+RF-018
+Registrar Resultado (C)
+Registra automáticamente el resultado al completar una actividad.
+HU-005,HU-006
+HISTORIAL
+Progreso
+Alta
+CREATE
+RF-019
+Consultar Progreso (R)
+Permite ver historial de actividades, puntajes y fechas.
+HU-005,HU-011
+HISTORIAL
+Progreso
+Alta
+READ
+RF-020
+Actualizar Progreso (U)
+Actualiza el estado de avance al completar módulos o actividades.
+HU-005
+PROGRESO
+Progreso
+Media
+UPDATE
+RF-021
+Eliminar Historial (D)
+El administrador puede eliminar registros de historial si es necesario.
+HU-017
+HISTORIAL
+Progreso
+Baja
+DELETE
+RF-022
+Exportar Reporte
+El docente exporta el reporte de progreso en PDF o Excel.
+HU-012
+REPORTE
+Progreso
+Media
+READ
+RF-023
+Reporte Global
+El administrador genera reportes globales de uso y desempeño.
+HU-017
+REPORTE
+Progreso
+Media
+CREATE/READ
+
+8.0.3 Requisitos No Funcionales (RNF-001 a RNF-015)
+
+ID
+Categoría
+Descripción / Métrica
+Evidencia
+Herramienta
+HU
+RNF-001
+Rendimiento
+Cargar cualquier página en menos de 3 segundos bajo condiciones normales de red.
+Captura Network DevTools mostrando tiempos de carga.
+Chrome DevTools pestaña Network — promedio en 3 páginas.
+HU-003,HU-004
+RNF-002
+Rendimiento
+Actividades interactivas responden en menos de 1 segundo.
+Registro de tiempos durante 5 interacciones.
+Chrome DevTools Performance — 5 interacciones promediadas.
+HU-004,HU-006
+RNF-003
+Disponibilidad
+Sistema disponible al menos 99% del tiempo en horario escolar (6am–6pm).
+Registro de uptime durante 30 días consecutivos.
+UptimeRobot — reporte mensual de disponibilidad.
+HU-002,HU-003
+RNF-004
+Seguridad
+✔ Contraseñas cifradas con hash bcrypt. Verificación comparando hashes. NUNCA texto plano.
+Inspección BD mostrando hashes. Prueba de login exitoso.
+Revisión BD + OWASP ZAP + prueba funcional de autenticación.
+HU-001,HU-002
+RNF-005
+Seguridad
+✔ Bloqueo temporal 15 min tras 5 intentos fallidos consecutivos con registro en log.
+5 intentos → captura mensaje de bloqueo + registro en log.
+Prueba funcional manual — verificación del log de seguridad.
+HU-002
+RNF-006
+Usabilidad
+✔ 80% de estudiantes nuevos completan registro sin ayuda en menos de 5 minutos.
+Registro de tiempos de onboarding con 10 usuarios nuevos.
+Prueba con usuarios reales — cronómetro y observación.
+HU-001,HU-003
+RNF-007
+Usabilidad
+Interfaz obtiene puntuación mínima 70/100 en escala SUS.
+Formulario SUS completado por al menos 10 estudiantes.
+Cuestionario SUS estándar (10 preguntas) — puntaje promedio.
+HU-003,HU-004
+RNF-008
+Escalabilidad
+Soporta al menos 100 usuarios concurrentes sin degradación (&lt; 3s).
+Reporte de prueba de carga con 100 usuarios simultáneos.
+Apache JMeter — prueba de carga con 100 usuarios virtuales.
+HU-010,HU-017
+RNF-009
+Compatibilidad
+Funciona en Chrome, Firefox y Edge (últimas 2 versiones).
+Capturas en los 3 navegadores con funcionalidades clave.
+Prueba manual en cada navegador — checklist de funcionalidades.
+HU-003,HU-004
+RNF-010
+Compatibilidad
+Interfaz responsiva: 320px (móvil) hasta 1920px (escritorio).
+Capturas en DevTools para 3 tamaños de pantalla.
+Chrome DevTools modo dispositivo — móvil, tablet, escritorio.
+HU-003,HU-004
+RNF-011
+Mantenibilidad
+Cobertura de pruebas unitarias mínima del 70%.
+Reporte de cobertura generado por herramienta de testing.
+Jest (frontend) / JUnit (backend) — reporte de cobertura.
+HU-016,HU-017
+RNF-012
+Persistencia
+Progreso guardado automáticamente al completar cada actividad.
+Verificación en BD inmediatamente después de completar.
+Inspección BD + prueba funcional de guardado automático.
+HU-005,HU-008
+RNF-013
+Exportación
+Exportación PDF/Excel no supera 5 segundos para grupos de hasta 50 estudiantes.
+Cronometrado con grupos de 10, 30 y 50 estudiantes.
+Cronómetro manual + DevTools Network — 3 pruebas promediadas.
+HU-012
+RNF-014
+Accesibilidad
+Cumple nivel AA de WCAG 2.1 (contraste, texto alternativo, navegación por teclado).
+Reporte de auditoría con 0 errores críticos.
+Lighthouse (Chrome DevTools) — auditoría con puntaje ≥ 85.
+HU-003,HU-007
+RNF-015
+Integridad
+Valida todos los campos obligatorios antes de guardar, mostrando mensajes de error.
+Prueba de formularios con campos vacíos.
+Prueba funcional manual — checklist de validaciones por formulario.
+HU-001,HU-010
+
+8.0.4 Modelo Entidad-Relación — Resumen de Tablas 3FN
+Tabla
+Tipo
+Campos Clave
+Relaciones
+ROL
+Auxiliar 3FN
+id_rol (PK), nombre_rol, permisos, activo
+1 → N USUARIO
+NIVEL_EDUCATIVO
+Auxiliar 3FN
+id_nivel (PK), codigo_nie (UNIQUE), nombre_nivel, rango_grado
+1 → N USUARIO, N MÓDULO
+TIPO_CONTENIDO
+Auxiliar 3FN
+id_tipo_contenido (PK), nombre_tipo (UNIQUE)
+1 → N MÓDULO
+TIPO_ACTIVIDAD
+Auxiliar 3FN
+id_tipo_actividad (PK), nombre_tipo (UNIQUE)
+1 → N ACTIVIDAD
+INSTITUCIÓN
+Principal
+id_institucion (PK), nombre, municipio, tipo
+N:M USUARIO vía MATRÍCULA
+USUARIO
+Principal
+id_usuario (PK), nombre, apellido, correo (UNIQUE), contrasena (hash)
+N:1 ROL, N:1 NIVEL
+MATRÍCULA
+Intermedia N:M
+id_matricula (PK), id_usuario (FK), id_institucion (FK)
+Débil: vincula USUARIO ↔ INSTITUCIÓN
+MÓDULO
+Principal
+id_modulo (PK), titulo, id_tipo_contenido (FK), id_nivel (FK), activo
+1:N ACTIVIDAD
+ACTIVIDAD
+Principal
+id_actividad (PK), titulo, id_tipo_actividad (FK), id_modulo (FK), puntaje_maximo
+1:N PROGRESO_ESTUDIANTE
+PROGRESO_ESTUDIANTE
+Seguimiento
+id_progreso (PK), id_estudiante (FK), id_actividad (FK), estado, puntaje
+Débil: UNIQUE(est,act)
+HISTORIAL_PRACTICA
+Seguimiento
+id_historial (PK), id_estudiante (FK), id_modulo (FK), fechas, puntaje_total
+Débil: tiempo_empleado CALCULADO
+REPORTE
+Reportes
+id_reporte (PK), tipo, formato, contenido_url, id_generado_por (FK)
+N:1 USUARIO generador
+
+8.1 FASE 1 — ARQUITECTURA DEL SISTEMA
+8.1.1 Entregable 1: Tabla de Contexto
+ID
+Entidad Externa
+Tipo
+Descripción
+RF / RNF Relacionado
+EC-01
+Estudiante K-12
+Usuario principal
+Alumno K-12 que accede a módulos y actividades interactivas de IA.
+HU-001 a HU-008 / RF-001,RF-005,RF-011,RF-013,RF-016,RF-017,RF-018
+EC-02
+Docente
+Usuario principal
+Profesor que crea actividades, hace seguimiento y exporta reportes.
+HU-009 a HU-013 / RF-003,RF-012,RF-014,RF-015,RF-019,RF-022
+EC-03
+Administrador
+Usuario principal
+Gestor total: usuarios, módulos, roles y reportes globales.
+HU-014 a HU-018 / RF-001,RF-004,RF-006,RF-007,RF-009,RF-021,RF-023
+EC-04
+Sistema de Autenticación
+Subordinado
+Valida credenciales (bcrypt), sesiones y bloqueo por intentos.
+RF-005 / RNF-004,RNF-005
+EC-05
+Motor de Retroalimentación
+Subordinado
+Evalúa respuestas, calcula puntajes y genera retroalimentación inmediata.
+RF-016,RF-018 / RNF-002
+EC-06
+Sistema de Reportes
+Subordinado
+Genera y exporta reportes PDF/Excel de progreso.
+RF-022,RF-023 / RNF-013
+EC-07
+Base de Datos
+Subordinado
+Repositorio central 3FN. Todas las entidades del sistema.
+RF-001 a RF-023 / RNF-012
+EC-08
+Navegador Web
+Par
+Chrome/Firefox/Edge. Renderiza la interfaz responsiva.
+RNF-001,RNF-002,RNF-009,RNF-010
+EC-09
+Institución Educativa
+Par
+Entidad educativa externa. Contexto organizacional y reportes agrupados.
+RF-001 / MER: INSTITUCIÓN
+
+8.1.2 Entregable 2: Tabla de Interacciones
+ID
+Entidad
+Envía al Sistema
+Recibe del Sistema
+RF/RNF
+EC-01
+Estudiante K-12
+Registro, credenciales, respuestas a actividades
+Acceso, módulos, retroalimentación, historial
+RF-001,005,016,018,019
+EC-02
+Docente
+Credenciales, actividades, solicitudes de reporte
+Panel docente, confirmaciones, reportes PDF/Excel
+RF-012,014,019,022
+EC-03
+Administrador
+Usuarios, módulos, configuraciones de roles
+Confirmaciones de gestión, reportes globales
+RF-001,006,007,023
+EC-04
+Sist. Autenticación
+Hash bcrypt, contador intentos, token sesión
+Validación acceso, bloqueo 15 min, estado sesión
+RF-005 / RNF-004,005
+EC-05
+Motor Retroalim.
+Respuesta estudiante, criterio evaluación
+Retroalim. inmediata, puntaje parcial y total
+RF-016,018 / RNF-002
+EC-06
+Sist. Reportes
+Solicitud reporte + parámetros + formato
+Archivo PDF/Excel con datos de progreso
+RF-022,023 / RNF-013
+EC-07
+Base de Datos
+Consultas y operaciones CRUD
+Datos consultados, confirmación de escritura
+RF-001 a RF-023 / RNF-012
+EC-08
+Navegador Web
+Solicitudes HTTP, eventos de interacción
+Páginas HTML/CSS/JS, respuestas JSON
+RNF-001,002,009,010
+EC-09
+Institución Educativa
+Datos institucionales, solicitudes matrícula
+Confirmación, reportes agrupados
+RF-001 / MER: INSTITUCIÓN
+
+8.1.3 Entregable 3: Diagrama de Contexto Arquitectónico (DCA)
+Sistema Central: PLATAFORMA DE ALFABETIZACIÓN EN IA PARA K-12 — Sistema web que centraliza gestión de usuarios, módulos educativos, actividades interactivas y seguimiento del progreso.
+
+Figura 1: Diagrama de Contexto Arquitectónico — 9 entidades externas y flujos de datos
+
+8.1.4 Entregable 4: Diagrama de Arquetipos
+ID
+Nombre
+Capa
+Descripción Semántica
+Fuente ERS
+ARQ-01
+Usuario
+Actores
+Actor central. Estudiante, Docente o Admin con identidad y credenciales.
+HU-001 a 018 / RF-001 a 006
+ARQ-02
+Rol
+Actores
+Define permisos y funciones del usuario en el sistema.
+RF-006 / HU-018
+ARQ-03
+Institución
+Organización
+Entidad educativa que agrupa usuarios y contextualiza reportes.
+MER / RF-001,002
+ARQ-04
+Matrícula
+Organización
+Vínculo N:M entre Usuario e Institución (entidad débil).
+MER / RF-001
+ARQ-05
+NivelEducativo
+Organización
+Categoriza grados K-12 para filtrar contenido adecuado.
+MER / RF-007,008
+ARQ-06
+Módulo
+Contenido Educativo
+Unidad temática de aprendizaje con actividades agrupadas.
+HU-003,016 / RF-007 a 011
+ARQ-07
+TipoContenido
+Contenido Educativo
+Catálogo de categorías temáticas de módulos (3FN).
+MER (3FN) / RF-007
+ARQ-08
+Actividad
+Contenido Educativo
+Ejercicio interactivo ejecutable que genera progreso y retroalimentación.
+HU-004,010 / RF-012 a 016
+ARQ-09
+TipoActividad
+Contenido Educativo
+Catálogo de tipos pedagógicos de actividades (3FN).
+MER (3FN) / RF-012
+ARQ-10
+ProgresoEstudiante
+Seguimiento
+Registro de avance por actividad con guardado automático.
+HU-005,008 / RF-017,020
+ARQ-11
+HistorialPractica
+Seguimiento
+Registro histórico de módulos completados por estudiante.
+HU-005,006 / RF-018,019,021
+ARQ-12
+Reporte
+Reportes
+Documento de progreso exportable en PDF o Excel.
+HU-012,017 / RF-022,023
+
+Figura 2: Diagrama de Arquetipos — 12 arquetipos en 5 capas semánticas con 14 relaciones
+
+8.1.5 Entregable 5: Diagrama de Componentes UML
+ID
+Subsistema
+Arquetipos Agrupados
+RF Cubiertos
+Interfaces
+Just.
+SUB-01
+Gestión Usuarios
+ARQ-01,02,03,04
+RF-001 a RF-006
+IRegistro,IAuth,IRoles
+Centraliza identidad y acceso
+SUB-02
+Gestión Contenidos
+ARQ-05,06,07
+RF-007 a RF-011
+IModulo,ITipoContenido
+Administra material educativo
+SUB-03
+Gestión Actividades
+ARQ-08,09+Motor
+RF-012 a RF-016
+IActividad,IRetroalim.
+Creación y ejecución de actividades
+SUB-04
+Seguimiento/Progreso
+ARQ-10,11
+RF-017 a RF-021
+IProgreso,IHistorial
+Registra avance académico
+SUB-05
+Reportes
+ARQ-12+Dashboard
+RF-022,023
+IReporte,IExportacion
+Genera reportes individuales/globales
+SUB-06
+Infraestructura/BD
+Repositorios 3FN
+Todos los RF
+IRepositorio
+Abstrae acceso al esquema 3FN
+SUB-07
+Interfaz de Usuario
+Portales+Paneles
+RNF-009,010,014
+IUI,INavegacion
+Presentación responsiva para 3 roles
+
+Figura 3: Diagrama de Componentes UML — 7 subsistemas, interfaces y dependencias
+
+8.1.6 Entregable 6: Diagrama de Despliegue UML
+Nodo
+Nombre
+Tecnología
+Protocolo
+RNF Justifica
+NOD-01
+Dispositivo Cliente
+Navegador Chrome/Firefox/Edge
+HTTPS 443
+RNF-009,010,014
+NOD-02
+Reverse Proxy
+Nginx + SSL/TLS 1.3
+HTTPS 443 / HTTP 3000
+RNF-003,008
+NOD-03
+Servidor Aplicación
+Node.js / Express Puerto 3000
+HTTP 3000 / TCP 5432
+RNF-001,002,004,005,011
+NOD-04
+Servidor BD
+PostgreSQL 15 Puerto 5432
+TCP 5432
+RNF-012,015
+NOD-05
+Almacenamiento S3
+Object Storage
+HTTPS S3 API
+RNF-013
+NOD-06
+Monitoreo
+UptimeRobot + Logs
+HTTP Webhooks
+RNF-003,005
+NOD-07
+CI/CD
+GitHub + GitHub Actions
+SSH/GitHub API
+RNF-011
+
+Figura 4: Diagrama de Despliegue UML — 7 nodos físicos con artefactos y protocolos
+
+8.2 FASE 2 — DISEÑO DE DATOS
+8.2.1 Entregable 7: Diccionario de Datos
+Fichas completas con atributos abstractos y reglas de negocio en documento complementario E8_E9_E10_CU_adicionales.docx. Aquí se presenta el índice.
+Arq.
+Entidad
+Capa
+RF
+Descripción
+ARQ-01
+USUARIO
+Actores
+RF-001 a 006
+Actor central. nombre, apellido, correo(UNIQUE), contrasena(bcrypt), id_rol(FK), id_nivel(FK).
+ARQ-02
+ROL
+Actores
+RF-006
+nombre_rol CHECK(5 roles), permisos JSONB, activo BOOLEAN.
+ARQ-05
+NIVEL_EDUCATIVO
+Organización
+RF-007,008
+codigo_nie UNIQUE, nombre_nivel, rango_grado. Surgió de 1FN.
+ARQ-03
+INSTITUCIÓN
+Organización
+RF-001,002
+nombre, municipio, tipo CHECK(publica/privada).
+ARQ-04
+MATRÍCULA
+Organización
+RF-001
+Débil. UNIQUE(id_usuario,id_institucion). Vínculo N:M.
+ARQ-06
+MÓDULO
+Contenido Educ.
+RF-007 a 011
+titulo, id_tipo_contenido(FK 3FN), id_nivel(FK 3FN), activo.
+ARQ-07
+TIPO_CONTENIDO
+Contenido Educ.
+RF-007
+nombre_tipo UNIQUE. Catálogo temático (3FN).
+ARQ-08
+ACTIVIDAD
+Contenido Educ.
+RF-012 a 016
+instrucciones, criterio_evaluacion, puntaje_maximo(&gt;0).
+ARQ-09
+TIPO_ACTIVIDAD
+Contenido Educ.
+RF-012
+nombre_tipo UNIQUE. Catálogo pedagógico (3FN).
+ARQ-10
+PROGRESO_ESTUDIANTE
+Seguimiento
+RF-017,020
+Débil. estado CHECK. modulos_completados CALCULADO.
+ARQ-11
+HISTORIAL_PRACTICA
+Seguimiento
+RF-018,019,021
+Débil. tiempo_empleado CALCULADO. Solo admin elimina.
+ARQ-12
+REPORTE
+Reportes
+RF-022,023
+tipo CHECK(3), formato CHECK(PDF/Excel), contenido_url.
+
+8.2.2 Entregable 8: Modelo Entidad-Relación Conceptual (MER)
+Entidad Débil
+Depende de
+Discriminador
+Justificación
+MATRÍCULA
+USUARIO + INSTITUCIÓN
+id_usuario + id_institucion
+Sin usuario ni institución no hay matrícula. Materializa relación N:M.
+PROGRESO_ESTUDIANTE
+USUARIO + ACTIVIDAD
+id_estudiante + id_actividad
+Existe solo para estudiante concreto en actividad concreta.
+HISTORIAL_PRACTICA
+USUARIO + MÓDULO
+id_estudiante + id_modulo
+Existe solo para estudiante que completó un módulo específico.
+
+MER Conceptual completo (fichas por entidad, 15 relaciones con cardinalidades) en E8_E9_E10_CU_adicionales.docx.
+
+8.2.3 Entregable 9: Modelo Relacional
+Tabla
+Columnas y Tipos SQL Clave
+FKs
+Constraints Principales
+ROL
+id_rol SERIAL PK, nombre_rol VARCHAR(50), permisos JSONB, activo BOOLEAN
+—
+nombre_rol UNIQUE, CHECK IN (5 roles)
+NIVEL_EDUCATIVO
+id_nivel SERIAL PK, codigo_nie VARCHAR(20), nombre_nivel VARCHAR(100), rango_grado VARCHAR(20)
+—
+codigo_nie UNIQUE, NOT NULL
+TIPO_CONTENIDO
+id_tipo_contenido SERIAL PK, nombre_tipo VARCHAR(100)
+—
+nombre_tipo UNIQUE
+TIPO_ACTIVIDAD
+id_tipo_actividad SERIAL PK, nombre_tipo VARCHAR(100)
+—
+nombre_tipo UNIQUE
+INSTITUCIÓN
+id_institucion SERIAL PK, nombre VARCHAR(200), municipio VARCHAR(100), tipo VARCHAR(10)
+—
+CHECK tipo IN (&apos;publica&apos;,&apos;privada&apos;)
+USUARIO
+id_usuario SERIAL PK, nombre/apellido VARCHAR(100), correo VARCHAR(150), contrasena VARCHAR(255)
+id_rol INT, id_nivel INT
+correo UNIQUE, CHECK email, contrasena=hash bcrypt
+MATRÍCULA
+id_matricula SERIAL PK, fecha_matricula TIMESTAMP
+id_usuario CASCADE, id_institucion CASCADE
+UNIQUE(id_usuario,id_institucion)
+MÓDULO
+id_modulo SERIAL PK, titulo VARCHAR(200), descripcion TEXT, activo BOOLEAN
+id_tipo_contenido, id_nivel, id_docente
+FK NOT NULL, RESTRICT
+ACTIVIDAD
+id_actividad SERIAL PK, titulo VARCHAR(200), instrucciones TEXT, puntaje_maximo INT
+id_tipo_actividad, id_modulo CASCADE, id_docente
+CHECK puntaje_maximo &gt; 0
+PROGRESO_ESTUDIANTE
+id_progreso SERIAL PK, puntaje_obtenido NUMERIC(6,2), estado VARCHAR(20)
+id_estudiante CASCADE, id_actividad CASCADE
+CHECK estado, UNIQUE(est,act)
+HISTORIAL_PRACTICA
+id_historial SERIAL PK, fecha_inicio/fin TIMESTAMP, puntaje_total NUMERIC(8,2)
+id_estudiante CASCADE, id_modulo RESTRICT
+NOT NULL fechas y puntaje
+REPORTE
+id_reporte SERIAL PK, tipo VARCHAR(20), formato VARCHAR(10), contenido_url VARCHAR(500)
+id_generado_por RESTRICT, id_institucion SET NULL
+CHECK tipo y formato
+
+8.2.4 Entregable 10: Normalización (3FN)
+FN
+Tabla Afectada
+Problema Detectado
+Solución Aplicada
+Resultado
+1FN
+MÓDULO
+Campo &apos;tipo&apos; era ENUM embebido — viola atomicidad
+Crear TIPO_CONTENIDO. MÓDULO gana FK
++ 1 tabla auxiliar extensible
+1FN
+ACTIVIDAD
+Campo &apos;tipo&apos; era ENUM embebido — viola atomicidad
+Crear TIPO_ACTIVIDAD. ACTIVIDAD gana FK
++ 1 tabla auxiliar extensible
+1FN
+USUARIO/MÓDULO
+&apos;grado_curso&apos; era texto libre potencialmente multivaluado
+Crear NIVEL_EDUCATIVO. Ambas tablas ganan FK
++ 1 tabla. Elimina texto repetido
+2FN
+MATRÍCULA
+Atributos de USUARIO/INSTITUCIÓN podrían duplicarse
+Solo FK + fecha_matricula
+Elimina dependencias parciales
+2FN
+PROGRESO/HISTORIAL
+Atributos de entidades padre podrían copiarse
+Solo atributos propios + FK
+Sin redundancia entre tablas
+3FN
+HISTORIAL_PRACTICA
+&apos;tiempo_empleado&apos; = fecha_fin - fecha_inicio (transitivo)
+Calcular en consulta, no almacenar
+Elimina dependencia transitiva
+3FN
+PROGRESO_ESTUDIANTE
+&apos;modulos_completados&apos; = COUNT(*) sobre la misma tabla (transitivo)
+Calcular: COUNT(*) WHERE completado
+Datos siempre consistentes
+3FN
+USUARIO
+Campo &apos;estado&apos; duplicaba ROL.activo (transitivo: usuario→rol→activo)
+Eliminar &apos;estado&apos;. Gestionar via ROL.activo
+Elimina dependencia transitiva
+
+8.2.5 Entregable 11: Script DDL
+
+-- DDL — Plataforma Alfabetización en IA K-12 | PostgreSQL 15 | Esquema 3FN
+
+DROP TABLE IF EXISTS REPORTE,HISTORIAL_PRACTICA,PROGRESO_ESTUDIANTE,ACTIVIDAD,
+    TIPO_ACTIVIDAD,MODULO,TIPO_CONTENIDO,MATRICULA,USUARIO,INSTITUCION,NIVEL_EDUCATIVO,ROL CASCADE;
+
+CREATE TABLE ROL (id_rol SERIAL PRIMARY KEY, nombre_rol VARCHAR(50) NOT NULL UNIQUE
+    CHECK (nombre_rol IN (&apos;Estudiante&apos;,&apos;Docente&apos;,&apos;Administrador&apos;,&apos;Coordinador&apos;,&apos;Directivo&apos;)),
+    descripcion TEXT, permisos JSONB, activo BOOLEAN NOT NULL DEFAULT TRUE);
+
+CREATE TABLE NIVEL_EDUCATIVO (id_nivel SERIAL PRIMARY KEY,
+    codigo_nie VARCHAR(20) NOT NULL UNIQUE, nombre_nivel VARCHAR(100) NOT NULL,
+    rango_grado VARCHAR(20) NOT NULL);
+
+CREATE TABLE TIPO_CONTENIDO (id_tipo_contenido SERIAL PRIMARY KEY,
+    nombre_tipo VARCHAR(100) NOT NULL UNIQUE, descripcion TEXT);
+
+CREATE TABLE TIPO_ACTIVIDAD (id_tipo_actividad SERIAL PRIMARY KEY,
+    nombre_tipo VARCHAR(100) NOT NULL UNIQUE, descripcion TEXT);
+
+CREATE TABLE INSTITUCION (id_institucion SERIAL PRIMARY KEY,
+    nombre VARCHAR(200) NOT NULL, municipio VARCHAR(100) NOT NULL,
+    tipo VARCHAR(10) CHECK (tipo IN (&apos;publica&apos;,&apos;privada&apos;)),
+    niveles_educativos TEXT, contacto VARCHAR(200));
+
+CREATE TABLE USUARIO (id_usuario SERIAL PRIMARY KEY, nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL, correo VARCHAR(150) NOT NULL UNIQUE
+    CHECK (correo ~* &apos;^[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}$&apos;),
+    contrasena VARCHAR(255) NOT NULL,
+    id_rol INT NOT NULL REFERENCES ROL(id_rol),
+    id_nivel INT REFERENCES NIVEL_EDUCATIVO(id_nivel),
+    fecha_registro TIMESTAMP NOT NULL DEFAULT NOW());
+
+CREATE TABLE MATRICULA (id_matricula SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL REFERENCES USUARIO(id_usuario) ON DELETE CASCADE,
+    id_institucion INT NOT NULL REFERENCES INSTITUCION(id_institucion) ON DELETE CASCADE,
+    fecha_matricula TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE (id_usuario, id_institucion));
+
+CREATE TABLE MODULO (id_modulo SERIAL PRIMARY KEY, titulo VARCHAR(200) NOT NULL,
+    descripcion TEXT NOT NULL,
+    id_tipo_contenido INT NOT NULL REFERENCES TIPO_CONTENIDO(id_tipo_contenido),
+    id_nivel INT NOT NULL REFERENCES NIVEL_EDUCATIVO(id_nivel),
+    area_curricular VARCHAR(100),
+    id_docente INT NOT NULL REFERENCES USUARIO(id_usuario),
+    activo BOOLEAN NOT NULL DEFAULT TRUE);
+
+CREATE TABLE ACTIVIDAD (id_actividad SERIAL PRIMARY KEY, titulo VARCHAR(200) NOT NULL,
+    descripcion TEXT NOT NULL,
+    id_tipo_actividad INT NOT NULL REFERENCES TIPO_ACTIVIDAD(id_tipo_actividad),
+    id_modulo INT NOT NULL REFERENCES MODULO(id_modulo) ON DELETE CASCADE,
+    id_docente INT NOT NULL REFERENCES USUARIO(id_usuario),
+    instrucciones TEXT NOT NULL, criterio_evaluacion TEXT NOT NULL,
+    puntaje_maximo INT NOT NULL CHECK (puntaje_maximo &gt; 0),
+    fecha_creacion TIMESTAMP NOT NULL DEFAULT NOW());
+
+CREATE TABLE PROGRESO_ESTUDIANTE (id_progreso SERIAL PRIMARY KEY,
+    id_estudiante INT NOT NULL REFERENCES USUARIO(id_usuario),
+    id_actividad INT NOT NULL REFERENCES ACTIVIDAD(id_actividad),
+    puntaje_obtenido NUMERIC(6,2) DEFAULT 0,
+    fecha_realizacion TIMESTAMP NOT NULL DEFAULT NOW(),
+    estado VARCHAR(20) NOT NULL DEFAULT &apos;en_progreso&apos;
+        CHECK (estado IN (&apos;completado&apos;,&apos;en_progreso&apos;)),
+    retroalimentacion JSONB,
+    UNIQUE (id_estudiante, id_actividad));
+
+CREATE TABLE HISTORIAL_PRACTICA (id_historial SERIAL PRIMARY KEY,
+    id_estudiante INT NOT NULL REFERENCES USUARIO(id_usuario),
+    id_modulo INT NOT NULL REFERENCES MODULO(id_modulo),
+    fecha_inicio TIMESTAMP NOT NULL, fecha_fin TIMESTAMP NOT NULL,
+    puntaje_total NUMERIC(8,2) NOT NULL DEFAULT 0,
+    actividades_completadas INT NOT NULL DEFAULT 0,
+    modulo_aprobado BOOLEAN NOT NULL DEFAULT FALSE);
+
+CREATE TABLE REPORTE (id_reporte SERIAL PRIMARY KEY,
+    tipo VARCHAR(20) NOT NULL CHECK (tipo IN (&apos;individual&apos;,&apos;grupal&apos;,&apos;global&apos;)),
+    rango VARCHAR(300) NOT NULL, fecha_generacion TIMESTAMP NOT NULL DEFAULT NOW(),
+    id_generado_por INT NOT NULL REFERENCES USUARIO(id_usuario),
+    id_institucion INT REFERENCES INSTITUCION(id_institucion),
+    formato VARCHAR(10) NOT NULL CHECK (formato IN (&apos;PDF&apos;,&apos;Excel&apos;)),
+    contenido_url VARCHAR(500) NOT NULL);
+
+-- Índices de rendimiento
+CREATE INDEX idx_usuario_correo ON USUARIO(correo);
+CREATE INDEX idx_modulo_nivel ON MODULO(id_nivel);
+CREATE INDEX idx_modulo_activo ON MODULO(activo);
+CREATE INDEX idx_actividad_modulo ON ACTIVIDAD(id_modulo);
+CREATE INDEX idx_progreso_est ON PROGRESO_ESTUDIANTE(id_estudiante);
+CREATE INDEX idx_progreso_act ON PROGRESO_ESTUDIANTE(id_actividad);
+CREATE INDEX idx_historial_est ON HISTORIAL_PRACTICA(id_estudiante);
+CREATE INDEX idx_historial_mod ON HISTORIAL_PRACTICA(id_modulo);
+
+-- Seed data
+INSERT INTO ROL(nombre_rol,descripcion,activo) VALUES
+    (&apos;Estudiante&apos;,&apos;Accede a módulos y actividades&apos;,TRUE),
+    (&apos;Docente&apos;,&apos;Crea actividades y hace seguimiento&apos;,TRUE),
+    (&apos;Administrador&apos;,&apos;Gestión total de la plataforma&apos;,TRUE);
+
+INSERT INTO NIVEL_EDUCATIVO(codigo_nie,nombre_nivel,rango_grado) VALUES
+    (&apos;NIE-001&apos;,&apos;Primaria Baja&apos;,&apos;K-2&apos;),(&apos;NIE-002&apos;,&apos;Primaria Alta&apos;,&apos;3-5&apos;),
+    (&apos;NIE-003&apos;,&apos;Secundaria&apos;,&apos;6-8&apos;),(&apos;NIE-004&apos;,&apos;Media&apos;,&apos;9-12&apos;);
+
+INSERT INTO TIPO_CONTENIDO(nombre_tipo) VALUES
+    (&apos;Fundamentos IA&apos;),(&apos;Ética en IA&apos;),(&apos;Programación IA&apos;),(&apos;Robótica&apos;);
+
+INSERT INTO TIPO_ACTIVIDAD(nombre_tipo) VALUES
+    (&apos;Cuestionario&apos;),(&apos;Simulación&apos;),(&apos;Ejercicio Práctico&apos;),(&apos;Debate&apos;);
+
+-- Vista: progreso completo por estudiante
+CREATE VIEW v_progreso_completo AS
+SELECT u.nombre||&apos; &apos;||u.apellido AS estudiante, m.titulo AS modulo,
+    a.titulo AS actividad, pe.estado, pe.puntaje_obtenido, a.puntaje_maximo,
+    ROUND((pe.puntaje_obtenido/a.puntaje_maximo)*100,1) AS porcentaje
+FROM PROGRESO_ESTUDIANTE pe
+JOIN USUARIO u ON pe.id_estudiante=u.id_usuario
+JOIN ACTIVIDAD a ON pe.id_actividad=a.id_actividad
+JOIN MODULO m ON a.id_modulo=m.id_modulo
+ORDER BY u.id_usuario, m.id_modulo, a.id_actividad;
+
+8.3 FASE 3 — DISEÑO A NIVEL DE COMPONENTES
+8.3.1 Entregable 12: Diagrama de Clases Detallado
+Clase
+Capa
+RF
+Métodos Clave
+Relaciones UML
+Usuario
+Actores
+RF-001 a 006
+registrar(), autenticar(pwd), getNombreCompleto(), desactivar()
+N:1 Rol · N:1 NivelEduc. · 1:N ProgresoEst. · 1:N Historial · 1:N Reporte
+Rol
+Actores
+RF-006
+getNombreRol(), isActivo(), actualizarPermisos()
+1:N Usuario
+NivelEducativo
+Organización
+RF-007,008
+getCodigo(), getNombre()
+1:N Usuario · 1:N Modulo
+Modulo
+Contenido Educ.
+RF-007 a 011
+crear(), consultar(), modificar(), eliminar(), getActividades()
+Composición 1:N Actividad · N:1 TipoContenido
+Actividad
+Contenido Educ.
+RF-012 a 016
+crear(), ejecutar(est), evaluar(resp), generarRetroalimentacion()
+N:1 TipoActividad · 1:N ProgresoEstudiante
+ProgresoEstudiante
+Seguimiento
+RF-017,020
+guardarAvance(), completar(), getPuntaje(), getEstado()
+N:1 Usuario · N:1 Actividad
+HistorialPractica
+Seguimiento
+RF-018,019,021
+registrar(), calcularTiempoEmpleado(), isAprobado()
+N:1 Usuario · N:1 Modulo
+Reporte
+Reportes
+RF-022,023
+generar(), exportarPDF(), exportarExcel(), getUrl()
+N:1 Usuario (generador)
+
+Figura 5: Diagrama de Clases Detallado — 12 clases UML con atributos, métodos y relaciones
+
+8.3.2 Entregable 13: Diagramas de Secuencia
+DS-01: Iniciar Sesión
+RF: RF-005 / RNF-004, RNF-005
+Flujo: Usuario envía credenciales → AuthService busca en BD → compara hash bcrypt → genera JWT → redirige al panel según rol. Flujo A1: 5 intentos fallidos → bloqueo 15 min + log seguridad.
+
+Figura 6: DS-01 — Iniciar Sesión con bloqueo por intentos fallidos
+
+DS-02: Ejecutar Actividad Interactiva (CU-001)
+RF: RF-013,016,017,018 / RNF-002,012
+Flujo: selección → carga → respuesta → evaluación → retroalimentación (&lt; 1s) → guardado automático → historial al completar. Flujos alt.: sesión expirada (guarda parcial), respuesta incorrecta (reintento máx.3).
+
+Figura 7: DS-02 — Ejecutar Actividad Interactiva (CU-001)
+
+DS-03: Generar y Exportar Reporte
+RF: RF-022,023 / RNF-013
+Flujo: configurar parámetros → consultar BD → procesar datos → generar PDF/Excel → subir a S3 → registrar en REPORTE → enlace de descarga. Límite: &lt; 5s para ≤ 50 estudiantes.
+
+Figura 8: DS-03 — Generar y Exportar Reporte
+
+8.3.3 Entregable 14: Diagrama de Estados
+DE-01: Ciclo de vida — ACTIVIDAD
+RF: RF-012,013,014,015,016
+7 estados: BORRADOR → PUBLICADA → ASIGNADA → EN EJECUCIÓN → COMPLETADA. Flujos alt.: MODIFICADA (vuelta a publicación) y ARCHIVADA (desactivación lógica conservando historial).
+
+Figura 9: DE-01 — Ciclo de vida de ACTIVIDAD (7 estados, 9 transiciones)
+
+DE-02: Ciclo de vida — PROGRESO_ESTUDIANTE
+RF: RF-016,017,018,020
+5 estados: NO INICIADO → EN PROGRESO → PAUSADO (sesión expirada) → COMPLETADO → REPASO. Garantiza continuidad con guardado automático (RNF-012).
+
+Figura 10: DE-02 — Ciclo de vida de PROGRESO_ESTUDIANTE
+
+DE-03: Ciclo de vida — USUARIO
+RF: RF-001,003,004,005 / RNF-004,005
+5 estados: PENDIENTE → ACTIVO → BLOQUEADO Temporal (15 min tras 5 intentos) → INACTIVO → ELIMINADO Lógico. El historial académico se conserva en todos los estados.
+
+Figura 11: DE-03 — Ciclo de vida de USUARIO con bloqueo de seguridad
+
+8.4 FASE 4 — DISEÑO DE INTERFAZ DE USUARIO
+8.4.1 Entregable 15: Mapa de Navegación
+Módulo
+Pantallas
+Roles
+Descripción de Flujos
+Autenticación
+SCR-01 Login, SCR-02 Registro, SCR-03 Recuperar Password
+Todos
+Login → panel según rol. Recuperar pwd por correo. Registro de nuevo usuario.
+Panel Estudiante
+SCR-04 Dashboard, SCR-06 Catálogo, SCR-07 Detalle Módulo, SCR-08 Actividad Interactiva, SCR-09 Resultado, SCR-10 Mi Progreso, SCR-11 Historial, SCR-12 Retroalimentación, SCR-13 Notificaciones
+Estudiante K-12
+Dashboard → Módulos → Actividad (CU-001) → Resultado → Mi Progreso → Historial.
+Panel Docente
+SCR-15 Dashboard, SCR-17 Gestión Actividades, SCR-18 Crear/Editar, SCR-19 Seguimiento Grupo, SCR-20 Detalle Estudiante, SCR-21 Exportar Reporte, SCR-22 Preview Reporte, SCR-23 Asignar, SCR-24 Calendario
+Docente
+Dashboard → Gestión Actividades (CRUD) → Seguimiento Grupo → Exportar Reporte (CU-005).
+Panel Admin
+SCR-25 Dashboard, SCR-27 Gestión Usuarios, SCR-28 Crear/Editar Usuario, SCR-29 Gestión Módulos, SCR-30 Crear/Editar Módulo, SCR-31 Reportes Globales, SCR-32 Config. Roles, SCR-33 Instituciones, SCR-34 Log Seguridad, SCR-35 Config. Sistema
+Administrador
+Dashboard → Gestión Usuarios (CRUD) → Gestión Módulos → Reportes Globales.
+Compartidas
+SCR-14 Configuración Cuenta
+Todos
+Accesible desde cualquier panel. Cambio de contraseña y preferencias.
+
+Figura 12: Mapa de Navegación — 35 pantallas (SCR-01 a SCR-35), 3 roles, flujos completos
+
+8.4.2 Entregable 16: Wireframes (Baja Fidelidad)
+6 pantallas estructurales sin colores ni estilos — solo disposición de elementos: header, sidebar, contenido principal, formularios, tablas, botones y campos.
+SCR
+Pantalla
+Rol
+Regiones y Elementos Estructurales
+Acciones Disponibles
+SCR-01
+Login
+Todos
+Header logo | Formulario correo+pwd | Checkbox recordar | Enlace olvide pwd | CTA INGRESAR | SSO | Enlace registro | Nota seguridad
+Ingresar → panel rol · Recuperar pwd · Registrarse
+SCR-04
+Dashboard Est.
+Estudiante
+Sidebar nav | Saludo+fecha | 3 cards resumen | Lista módulos con barra % | Acciones rápidas
+Clic módulo → SCR-07 · Mi Progreso → SCR-10 · Notificaciones → SCR-13
+SCR-08
+Actividad Interactiva
+Estudiante
+Breadcrumb+progreso | Cronómetro | Tarjeta pregunta+imagen | 4 opciones | Zona retroalim. | Nav anterior/siguiente | Barra estado
+Responder → eval.&lt; 1s · Siguiente → guardado auto · Finalizar → SCR-09
+SCR-10
+Mi Progreso
+Estudiante
+Sidebar | 3 cards | Indicadores circulares por módulo | Historial reciente | Botón exportar PDF
+Ver módulo → SCR-07 · Historial → SCR-11 · Exportar → descarga PDF
+SCR-17
+Gestión Actividades
+Docente
+Header+tabs | 4 mini-cards | Búsqueda+filtros | Tabla actividades(título,módulo,tipo,estado,acciones) | Paginación
+Nueva → SCR-18 · Editar → SCR-18 · Eliminar → modal · Seguimiento → SCR-19
+SCR-27
+Gestión Usuarios
+Admin
+Header+tabs | 4 cards métricas | Búsqueda+filtro rol | Tabla usuarios(nombre,correo,rol,estado,acciones) | Paginación
+Nuevo → SCR-28 · Editar → SCR-28 · Desactivar → conserva historial
+
+Figura 13: Wireframes de Baja Fidelidad — 6 pantallas principales en escala de grises
+
+8.4.3 Entregable 17: Prototipo Interactivo
+Paleta de Colores
+Token
+Nombre
+Hex
+RGB
+Uso Principal
+Primary
+Azul Institucional
+#1D4ED8
+rgb(29,78,216)
+Botones CTA, enlaces activos, elementos principales de acción
+Secondary
+Violeta Educativo
+#7C3AED
+rgb(124,58,237)
+Actividades interactivas, estados de ejecución, badges especiales
+Success
+Verde Logro
+#059669
+rgb(5,150,105)
+Respuestas correctas, estados completados, indicadores positivos
+Warning
+Ámbar Progreso
+#D97706
+rgb(217,119,6)
+Actividades en progreso, alertas moderadas, barras parciales
+Danger
+Rojo Alerta
+#DC2626
+rgb(220,38,38)
+Errores, estados bloqueados, intentos fallidos, eliminaciones
+Bg Dark
+Fondo Sidebar
+#0F172A
+rgb(15,23,42)
+Sidebar de navegación, barras de estado del sistema
+Bg Light
+Fondo Principal
+#F8FAFC
+rgb(248,250,252)
+Fondo general de las pantallas de contenido
+Text Main
+Texto Principal
+#1E293B
+rgb(30,41,59)
+Títulos, etiquetas, contenido principal
+Text Gray
+Texto Secundario
+#64748B
+rgb(100,116,139)
+Subtítulos, placeholders, metadatos, fechas
+Border
+Bordes
+#E2E8F0
+rgb(226,232,240)
+Bordes de cards, inputs, separadores, tablas
+
+Tipografía
+Fuente principal: Inter (Google Fonts) — sans-serif moderna, alta legibilidad, soporte completo para caracteres latinos y numéricos.
+Fuente datos/código: JetBrains Mono — valores numéricos, puntajes y datos técnicos en tablas.
+Fallback: system-ui, -apple-system, sans-serif — compatibilidad garantizada (RNF-009).
+
+Interacciones Simuladas Clave
+Pantalla
+Interacción
+Comportamiento Simulado
+SCR-01 Login
+Clic INGRESAR
+Spinner 300ms → fade-in al panel según rol. Si inválido: borde rojo + mensaje error en línea.
+SCR-01 Login
+5 intentos fallidos
+Formulario deshabilitado → contador regresivo 15 min → reactivación automática (RNF-005).
+SCR-04 Dashboard
+Hover en card de módulo
+Elevación de sombra + cambio cursor → tooltip con % exacto de progreso.
+SCR-08 Actividad
+Clic en opción
+Resaltado &lt; 100ms → evaluación → retroalimentación animada &lt; 1s (RNF-002).
+SCR-08 Actividad
+Clic Siguiente
+Transición slide-left → barra progreso actualizada → puntaje en tiempo real.
+SCR-08 Actividad
+Finalizar actividad
+Modal confirmación → animación resultado → navegar a SCR-09.
+SCR-19 Seguimiento
+Actualización en tiempo real
+Progreso de estudiantes actualizado cada 30s vía polling o WebSocket.
+SCR-21 Exportar Reporte
+Clic Exportar
+Barra progreso generación → descarga automática → toast notificación (RNF-013).
+Todas las pantallas
+Navegación sidebar
+Cambio pantalla fade-in 200ms. Item activo resaltado. Colapsa en &lt; 768px.
+
+Figura 14: Prototipo de Alta Fidelidad — 6 pantallas con identidad visual completa
+
+9. ARTEFACTOS DE TRAZABILIDAD
+Las siguientes 14 matrices conectan todos los entregables del trabajo, permitiendo rastrear cualquier elemento desde su origen (HU/CU) hasta su implementación (DDL/UI) y viceversa. Estas matrices son la evidencia de la coherencia y completitud del diseño.
+
+9.1 Entidades Externas → RF → CU → DCA
+ID EC
+Entidad Externa
+RF Relacionados
+CU Relacionados
+Referencia en DCA
+EC-01
+Estudiante K-12
+RF-001,005,011,013,016,017,018
+CU-001,CU-002
+Flujo: envía credenciales/respuestas → recibe módulos/retroalimentación
+EC-02
+Docente
+RF-003,012,014,015,019,022
+CU-003,CU-004,CU-005
+Flujo: envía actividades/solicitudes → recibe panel/reportes
+EC-03
+Administrador
+RF-001,004,006,007,009,021,023
+CU-002,CU-003
+Flujo: envía usuarios/módulos/config → recibe confirmaciones/reportes globales
+EC-04
+Sist. Autenticación
+RF-005
+CU-001 (A1: sesión exp.)
+Valida bcrypt. Bloqueo 15 min (RNF-005). Genera token JWT.
+EC-05
+Motor Retroalimentación
+RF-016,RF-018
+CU-001 (paso 6-7)
+Evalúa respuesta → puntaje parcial + mensaje retroalimentación (&lt; 1s RNF-002)
+EC-06
+Sistema de Reportes
+RF-022,RF-023
+CU-005
+Genera PDF/Excel → sube a S3 → retorna URL firmada (RNF-013 &lt; 5s)
+EC-07
+Base de Datos
+RF-001 a RF-023
+Todos los CU
+Recibe operaciones CRUD → retorna datos + confirmación (RNF-012)
+EC-08
+Navegador Web
+RNF-001,002,009,010,014
+CU-001 (paso 1,4,9)
+HTTP/HTTPS → HTML/CSS/JS responsivo. Compatible Chrome/Firefox/Edge
+EC-09
+Institución Educativa
+RF-001,RF-002
+CU-002 (registro usuario)
+Provee datos institucionales → recibe confirmación y reportes agrupados
+
+9.2 Arquetipos → CU → RF
+ARQ
+Arquetipo
+CU Relacionados
+RF que justifican el arquetipo
+ARQ-01
+Usuario
+CU-001,002,003,004,005
+RF-001,002,003,004,005,006 — CRUD completo de usuarios con autenticación y roles
+ARQ-02
+Rol
+CU-002
+RF-006 — asignación y gestión de permisos diferenciados por tipo de usuario
+ARQ-03
+Institución
+CU-002
+RF-001,002 — registro y consulta de instituciones educativas
+ARQ-04
+Matrícula
+CU-002
+RF-001 — vínculo N:M entre Usuario e Institución (entidad débil)
+ARQ-05
+NivelEducativo
+CU-002,003
+RF-007,008 — categorización K-12 para filtrar contenido adecuado por etapa
+ARQ-06
+Módulo
+CU-003
+RF-007,008,009,010,011 — CRUD de módulos con visualización interactiva
+ARQ-07
+TipoContenido
+CU-003
+RF-007 — catálogo temático de módulos normalizado a 3FN
+ARQ-08
+Actividad
+CU-001,003,004
+RF-012,013,014,015,016 — CRUD y ejecución de actividades pedagógicas
+ARQ-09
+TipoActividad
+CU-003
+RF-012 — catálogo pedagógico de actividades normalizado a 3FN
+ARQ-10
+ProgresoEstudiante
+CU-001,004
+RF-017,020 — guardado automático del avance por actividad
+ARQ-11
+HistorialPractica
+CU-001,004
+RF-018,019,021 — registro histórico de módulos completados
+ARQ-12
+Reporte
+CU-005
+RF-022,023 — generación y exportación de reportes PDF/Excel
+
+9.3 Componentes/Módulos → Arquetipos → RF → Interfaces
+SUB
+Subsistema
+Arquetipos
+RF Cubiertos
+Interfaces Expuestas
+SUB-01
+Gestión Usuarios
+ARQ-01,02,03,04
+RF-001 a RF-006
+IRegistro, IAuth, IRoles, IInstitucion
+SUB-02
+Gestión Contenidos
+ARQ-05,06,07
+RF-007 a RF-011
+IModulo, ITipoContenido, INivel
+SUB-03
+Gestión Actividades
+ARQ-08,09 + Motor
+RF-012 a RF-016
+IActividad, ITipoActividad, IRetroalimentacion
+SUB-04
+Seguimiento/Progreso
+ARQ-10,11
+RF-017 a RF-021
+IProgreso, IHistorial, IEstado
+SUB-05
+Reportes
+ARQ-12 + Dashboard
+RF-022,023
+IReporte, IExportacion, IDashboard
+SUB-06
+Infraestructura/BD
+Repositorios 3FN
+Todos los RF
+IRepositorio (CRUD genérico)
+SUB-07
+Interfaz de Usuario
+Portales + Paneles
+RNF-009,010,014
+IUI, INavegacion
+
+9.4 Nodos de Despliegue → Protocolos → RNF → Componentes
+Nodo
+Nombre
+Protocolo
+RNF Justifica
+Componentes Desplegados
+NOD-01
+Dispositivo Cliente
+HTTPS 443
+RNF-009,010,014
+Navegador Web, App Responsiva HTML/CSS/JS
+NOD-02
+Reverse Proxy (Nginx)
+HTTPS 443 / HTTP 3000
+RNF-003,008
+nginx.conf, SSL/TLS 1.3, Reglas de enrutamiento
+NOD-03
+Servidor Aplicación
+HTTP 3000 / TCP 5432
+RNF-001,002,004,005,011
+API REST, Auth JWT+bcrypt, Motor Retroalim., Generador PDF/Excel
+NOD-04
+Servidor BD (PostgreSQL)
+TCP 5432
+RNF-012,015
+Esquema 3FN, Réplica lectura, Backup diario, Índices pg_trgm
+NOD-05
+Almacenamiento S3
+HTTPS S3 API
+RNF-013
+Bucket multimedia, Bucket reportes generados
+NOD-06
+Monitoreo (UptimeRobot)
+HTTP Webhooks
+RNF-003,005
+Monitor 24/7, Log de seguridad, Alertas email/SMS
+NOD-07
+CI/CD (GitHub Actions)
+SSH/GitHub API
+RNF-011
+Código fuente, Pipeline build, Imagen Docker, Deploy automático
+
+9.5 Entidades → Arquetipos → RF → Reglas de Negocio
+Entidad (BD)
+ARQ
+RF Relacionados
+Tipo
+Reglas de Negocio Principales
+USUARIO
+ARQ-01
+RF-001 a RF-006
+Fuerte
+correo UNIQUE · contrasena=hash bcrypt · 1 rol exacto · desactivación sin borrar historial
+ROL
+ARQ-02
+RF-006
+Fuerte
+nombre_rol CHECK(5 valores) · Solo admin asigna roles · activo BOOLEAN
+NIVEL_EDUCATIVO
+ARQ-05
+RF-007,008
+Fuerte (3FN)
+codigo_nie UNIQUE · Todo módulo y estudiante tiene nivel · Filtra contenido visible
+INSTITUCIÓN
+ARQ-03
+RF-001,002
+Fuerte
+tipo CHECK(&apos;publica&apos;,&apos;privada&apos;) · N:M con USUARIO vía MATRÍCULA
+MATRÍCULA
+ARQ-04
+RF-001
+Débil
+UNIQUE(id_usuario,id_institucion) · Depende de USUARIO e INSTITUCIÓN
+MÓDULO
+ARQ-06
+RF-007 a RF-011
+Fuerte
+FK tipo_contenido y nivel · activo BOOLEAN · Solo admin gestiona
+TIPO_CONTENIDO
+ARQ-07
+RF-007
+Fuerte (3FN)
+nombre_tipo UNIQUE · No eliminar si tiene módulos · Solo admin gestiona
+ACTIVIDAD
+ARQ-08
+RF-012 a RF-016
+Fuerte
+puntaje_maximo &gt; 0 · Solo docente/admin crea · ON DELETE CASCADE con módulo
+TIPO_ACTIVIDAD
+ARQ-09
+RF-012
+Fuerte (3FN)
+nombre_tipo UNIQUE · No eliminar si tiene actividades
+PROGRESO_ESTUDIANTE
+ARQ-10
+RF-017,020
+Débil
+UNIQUE(est,act) · estado IN(completado,en_progreso) · modulos_completados CALCULADO
+HISTORIAL_PRACTICA
+ARQ-11
+RF-018,019,021
+Débil
+tiempo_empleado CALCULADO · Solo admin elimina · docente solo consulta
+REPORTE
+ARQ-12
+RF-022,023
+Fuerte
+tipo CHECK(3 valores) · formato CHECK(PDF,Excel) · contenido_url NOT NULL
+
+9.6 Relaciones MER → Cardinalidades → Reglas de Negocio
+ID
+Relación
+Entidades
+Card.
+Regla de Negocio Asociada
+REL-01
+tiene asignado
+USUARIO — ROL
+N:1
+Un usuario tiene exactamente 1 rol. No puede tener 0 roles ni múltiples roles simultáneos (RF-006).
+REL-02
+pertenece a
+USUARIO — NIVEL_EDUCATIVO
+N:1
+Cada estudiante tiene un nivel K-12. Determina qué módulos y actividades le son visibles (RF-008).
+REL-03
+se matricula en
+USUARIO — INSTITUCIÓN
+N:M
+Un usuario puede estar en varias instituciones. Vínculo materializado por entidad débil MATRÍCULA (RF-001).
+REL-04
+dirigido a
+MÓDULO — NIVEL_EDUCATIVO
+N:1
+Un módulo tiene un único nivel objetivo. Un nivel puede tener muchos módulos (RF-007).
+REL-05
+clasifica en
+MÓDULO — TIPO_CONTENIDO
+N:1
+Un módulo pertenece a un tipo de contenido (3FN). Un tipo agrupa varios módulos (RF-007).
+REL-06
+contiene
+MÓDULO — ACTIVIDAD
+1:N
+Un módulo tiene muchas actividades. Composición: si se elimina el módulo, sus actividades desaparecen (RF-012).
+REL-07
+clasifica en
+ACTIVIDAD — TIPO_ACTIVIDAD
+N:1
+Una actividad tiene un único tipo pedagógico (3FN). Un tipo agrupa muchas actividades (RF-012).
+REL-08
+genera
+USUARIO(Est.)— PROGRESO
+1:N
+Un estudiante genera un registro de progreso por actividad. UNIQUE(est,act) (RF-017).
+REL-09
+acumula
+USUARIO(Est.)— HISTORIAL
+1:N
+Un estudiante tiene un historial por módulo completado. tiempo_empleado CALCULADO en consulta (RF-018).
+REL-10
+origina
+ACTIVIDAD — PROGRESO
+1:N
+Una actividad puede tener registros de progreso de muchos estudiantes (RF-016).
+REL-11
+es registrado en
+MÓDULO — HISTORIAL
+1:N
+Un módulo puede aparecer en el historial de muchos estudiantes (RF-019).
+REL-12
+genera
+USUARIO(Doc/Adm)— REPORTE
+1:N
+Un docente/admin puede generar múltiples reportes. Solo su propio grupo para docente (RF-022).
+
+9.7 Tablas Relacionales → MER → PK → FK → Forma Normal
+Tabla
+ARQ
+PK
+FKs Definidas
+Forma Normal Alcanzada
+Cambio 3FN Aplicado
+ROL
+ARQ-02
+id_rol SERIAL
+—
+1FN, 2FN, 3FN
+—
+NIVEL_EDUCATIVO
+ARQ-05
+id_nivel SERIAL
+—
+1FN, 2FN, 3FN
+Creada en 1FN para eliminar texto libre en USUARIO/MÓDULO
+TIPO_CONTENIDO
+ARQ-07
+id_tipo_contenido SERIAL
+—
+1FN, 2FN, 3FN
+Creada en 1FN para eliminar ENUM en MÓDULO
+TIPO_ACTIVIDAD
+ARQ-09
+id_tipo_actividad SERIAL
+—
+1FN, 2FN, 3FN
+Creada en 1FN para eliminar ENUM en ACTIVIDAD
+INSTITUCIÓN
+ARQ-03
+id_institucion SERIAL
+—
+1FN, 2FN, 3FN
+—
+USUARIO
+ARQ-01
+id_usuario SERIAL
+id_rol INT, id_nivel INT
+1FN, 2FN, 3FN
+Eliminado campo &apos;estado&apos; (dep. transitiva → ROL.activo)
+MATRÍCULA
+ARQ-04
+id_matricula SERIAL
+id_usuario INT, id_institucion INT
+1FN, 2FN, 3FN
+Solo FK+fecha. Atributos padre viven en sus tablas (2FN)
+MÓDULO
+ARQ-06
+id_modulo SERIAL
+id_tipo_contenido, id_nivel, id_docente
+1FN, 2FN, 3FN
+Eliminado texto libre de nivel y tipo (1FN + 3FN)
+ACTIVIDAD
+ARQ-08
+id_actividad SERIAL
+id_tipo_actividad, id_modulo, id_docente
+1FN, 2FN, 3FN
+Eliminado ENUM tipo (1FN). Solo atributos propios (2FN)
+PROGRESO_ESTUDIANTE
+ARQ-10
+id_progreso SERIAL
+id_estudiante, id_actividad
+1FN, 2FN, 3FN
+Eliminado modulos_completados calculado (3FN)
+HISTORIAL_PRACTICA
+ARQ-11
+id_historial SERIAL
+id_estudiante, id_modulo
+1FN, 2FN, 3FN
+Eliminado tiempo_empleado calculado (3FN)
+REPORTE
+ARQ-12
+id_reporte SERIAL
+id_generado_por, id_institucion
+1FN, 2FN, 3FN
+—
+
+9.8 DDL → Modelo Relacional → PK → FK → Restricciones
+Tabla DDL
+PK en SQL
+FKs con ON DELETE
+Constraints Clave
+Verificación
+ROL
+SERIAL PRIMARY KEY
+—
+CHECK nombre_rol IN (5 valores), UNIQUE, NOT NULL
+Script DDL línea 4 — INSERT seed con 5 roles
+NIVEL_EDUCATIVO
+SERIAL PRIMARY KEY
+—
+codigo_nie UNIQUE, NOT NULL
+Script DDL línea 9 — INSERT seed K-2, 3-5, 6-8, 9-12
+USUARIO
+SERIAL PRIMARY KEY
+id_rol REFERENCES ROL, id_nivel REFERENCES NIVEL_EDUCATIVO
+correo UNIQUE, CHECK formato email, contrasena NOT NULL (hash)
+Script DDL línea 21 — CHECK con regex RFC 5322
+MATRÍCULA
+SERIAL PRIMARY KEY
+id_usuario ON DELETE CASCADE, id_institucion ON DELETE CASCADE
+UNIQUE(id_usuario,id_institucion)
+Script DDL línea 29 — evita matrícula duplicada
+MÓDULO
+SERIAL PRIMARY KEY
+id_tipo_contenido ON DELETE RESTRICT, id_nivel ON DELETE RESTRICT, id_docente ON DELETE RESTRICT
+activo BOOLEAN DEFAULT TRUE
+Script DDL línea 34 — RESTRICT protege integridad referencial
+ACTIVIDAD
+SERIAL PRIMARY KEY
+id_tipo_actividad RESTRICT, id_modulo CASCADE, id_docente RESTRICT
+puntaje_maximo &gt; 0 CHECK
+Script DDL línea 41 — CASCADE elimina actividades con módulo
+PROGRESO_ESTUDIANTE
+SERIAL PRIMARY KEY
+id_estudiante CASCADE, id_actividad CASCADE
+CHECK estado IN (&apos;completado&apos;,&apos;en_progreso&apos;), UNIQUE(est,act)
+Script DDL línea 49 — UNIQUE evita doble registro
+HISTORIAL_PRACTICA
+SERIAL PRIMARY KEY
+id_estudiante CASCADE, id_modulo RESTRICT
+NOT NULL en fechas y puntaje, BOOLEAN modulo_aprobado
+Script DDL línea 57
+REPORTE
+SERIAL PRIMARY KEY
+id_generado_por RESTRICT, id_institucion SET NULL
+CHECK tipo IN (3 vals), CHECK formato IN (PDF,Excel)
+Script DDL línea 64
+
+9.9 Clases → Métodos → CU → RF
+Clase
+Métodos Clave
+CU donde aparece
+RF que origina el método
+Usuario
+registrar(), autenticar(pwd), actualizarDatos(), desactivar()
+CU-002, CU-001 (autenticación)
+RF-001 (registrar), RF-005 (autenticar), RF-003 (actualizar), RF-004 (desactivar)
+Módulo
+crear(), consultar(), modificar(), eliminar(), getActividades()
+CU-003
+RF-007 (crear), RF-008 (consultar), RF-009 (modificar), RF-010 (eliminar)
+Actividad
+crear(), modificar(), eliminar(), ejecutar(est), evaluar(resp), generarRetroalimentacion()
+CU-001, CU-003
+RF-012 (crear), RF-014 (modificar), RF-015 (eliminar), RF-016 (ejecutar+evaluar)
+ProgresoEstudiante
+guardarAvance(), completar(), getPuntaje(), getEstado(), getRetroalimentacion()
+CU-001 (pasos 8,9)
+RF-017 (guardarAvance), RF-018 (completar), RF-020 (getEstado)
+HistorialPractica
+registrar(), calcularTiempoEmpleado(), isAprobado()
+CU-001 (paso 10), CU-004
+RF-018 (registrar), RF-019 (consultar), RF-021 (eliminar)
+Reporte
+generar(), exportarPDF(), exportarExcel(), getUrl()
+CU-005
+RF-022 (exportarPDF/Excel docente), RF-023 (generar global admin)
+Rol
+getNombreRol(), isActivo(), actualizarPermisos()
+CU-002
+RF-006 (gestión de roles y permisos diferenciados)
+NivelEducativo
+getCodigo(), getNombre()
+CU-002, CU-003
+RF-007 (asignar nivel a módulo), RF-008 (filtrar por nivel)
+
+9.10 Diagramas de Secuencia → CU → Clases → Flujos Alternativos
+DS
+Nombre
+CU
+Clases Participantes
+Flujos Alternativos Modelados
+DS-01
+Iniciar Sesión
+CU-001 (auth), CU-002
+Usuario, AuthService, BD Usuarios, Log Seguridad
+A1: Credenciales inválidas (contador intentos). A2: Bloqueo 15 min tras 5 intentos + log (RNF-005).
+DS-02
+Ejecutar Actividad Interactiva
+CU-001
+Actividad, Motor Retroalim., ProgresoEstudiante, HistorialPractica
+A1: Sesión expirada → guarda parcial + redirige. A2: Respuesta incorrecta → retroalim. + reintento (máx.3). A3: Completa → registra historial.
+DS-03
+Generar y Exportar Reporte
+CU-005
+Reporte, BD 3FN, Exportador PDF/Excel, Storage S3
+A1: Formato PDF → plantilla institucional. A2: Formato Excel → con gráfica. A3: &gt; 50 estudiantes → procesamiento asíncrono.
+
+9.11 Estados → Eventos → Acciones → RF / Reglas de Negocio
+Entidad / Estado
+Evento Disparador
+Acción Resultante
+RF / RNF
+Regla de Negocio
+ACTIVIDAD: BORRADOR → PUBLICADA
+publicar()
+activo=true. Visible en catálogo del nivel.
+RF-007,012
+Solo admin/docente puede publicar. Valida campos obligatorios.
+ACTIVIDAD: PUBLICADA → ARCHIVADA
+archivar()
+activo=false. Conserva historial.
+RF-010,015
+Si tiene historial: solo desactivación lógica. No eliminación física.
+ACTIVIDAD: ASIGNADA → EN EJECUCIÓN
+estudianteInicia()
+Crea PROGRESO_ESTUDIANTE estado=en_progreso.
+RF-016,017
+UNIQUE(est,act). Un registro por estudiante/actividad.
+ACTIVIDAD: EN EJECUCIÓN → COMPLETADA
+estudianteCompleta()
+estado=completado. Registra HISTORIAL_PRACTICA.
+RF-018,020
+Calcula puntaje_total. Evalúa modulo_aprobado.
+PROGRESO: NO INICIADO → EN PROGRESO
+iniciarActividad()
+fecha_realizacion=NOW(). puntaje=0.
+RF-016,017
+El progreso se guarda automáticamente sin acción del estudiante (RNF-012).
+PROGRESO: EN PROGRESO → PAUSADO
+inactividad &gt; 30 min
+Guarda avance parcial en BD. Sesión expirada.
+RF-017, CU-001 A1
+Al reingresar: restaura desde último punto guardado (HU-008).
+PROGRESO: COMPLETADO → REPASO
+revisarActividad()
+Solo lectura. Muestra respuestas y retroalimentación.
+RF-019
+No se puede modificar el puntaje en modo repaso.
+USUARIO: ACTIVO → BLOQUEADO
+5 intentos fallidos login
+Bloqueo 15 min. Evento en log de seguridad.
+RNF-005
+Bloqueo automático. El admin puede desbloquear manualmente.
+USUARIO: ACTIVO → INACTIVO
+desactivar() por admin
+activo=false via ROL. Conserva historial.
+RF-004
+El historial académico nunca se borra al desactivar un usuario.
+USUARIO: INACTIVO → ELIMINADO LÓGICO
+eliminar() por admin
+Anonimiza datos personales. Conserva historial.
+RF-004
+Solo eliminación lógica. Historial académico permanece.
+
+9.12 Pantallas → Roles → CU → RF → Wireframes
+SCR
+Nombre Pantalla
+Rol
+CU
+RF
+Wireframe / Figura
+SCR-01
+Login
+Todos
+CU-001 (auth), CU-002
+RF-005 / RNF-004,005
+E16 Figura 13 — campos correo+pwd, CTA, SSO
+SCR-04
+Dashboard Estudiante
+Estudiante
+CU-001
+RF-008,019 / RNF-001
+E16 Figura 13 — sidebar, cards resumen, módulos en progreso
+SCR-08
+Actividad Interactiva
+Estudiante
+CU-001
+RF-016 / RNF-002,012
+E16 Figura 13 — barra progreso, pregunta, opciones, retroalim.
+SCR-10
+Mi Progreso
+Estudiante
+CU-004 (consulta propia)
+RF-019,020 / RNF-001
+E16 Figura 13 — indicadores circulares, historial, exportar
+SCR-17
+Gestión Actividades
+Docente
+CU-003
+RF-012,013,014,015
+E16 Figura 13 — tabla CRUD, filtros, botón nueva actividad
+SCR-19
+Seguimiento Grupo
+Docente
+CU-004
+RF-019 / RNF-001,002
+E15 Figura 12 — tabla estudiantes, estado en tiempo real
+SCR-21
+Exportar Reporte
+Docente
+CU-005
+RF-022 / RNF-013
+E15 Figura 12 — formulario parámetros, barra progreso generación
+SCR-25
+Dashboard Admin
+Administrador
+CU-002,003
+RF-023 / RNF-001
+E15 Figura 12 — métricas globales, accesos rápidos
+SCR-27
+Gestión Usuarios
+Administrador
+CU-002
+RF-001,002,003,004
+E16 Figura 13 — tabla CRUD usuarios, filtros por rol
+SCR-29
+Gestión Módulos
+Administrador
+CU-003
+RF-007,008,009,010
+E15 Figura 12 — tabla módulos con estado y nivel
+
+9.13 Prototipo → Wireframes → Interacciones → Pantallas Destino
+Flujo
+Origen (Wireframe)
+Interacción Simulada
+Animación
+Pantalla Destino
+F-01
+SCR-01 Login
+Clic en INGRESAR con credenciales válidas
+Fade-in + slide-up
+SCR-04 / SCR-15 / SCR-25 según rol
+F-02
+SCR-04 Dashboard Est.
+Clic en módulo de la lista
+Slide-right
+SCR-07 Detalle Módulo
+F-03
+SCR-07 Detalle Módulo
+Clic en actividad disponible
+Slide-right
+SCR-08 Actividad Interactiva
+F-04
+SCR-08 Actividad
+Clic en opción de respuesta
+Resaltado &lt; 100ms + retroalim. &lt; 1s
+SCR-08 siguiente pregunta o SCR-09 si completa
+F-05
+SCR-08 Actividad
+Finalizar actividad (última pregunta)
+Modal confirmación → animación resultado
+SCR-09 Resultado Actividad
+F-06
+SCR-09 Resultado
+Clic en &apos;Ver mi progreso&apos;
+Fade-in
+SCR-10 Mi Progreso
+F-07
+SCR-15 Dashboard Doc.
+Clic en &apos;Seguimiento Grupo&apos;
+Fade-in
+SCR-19 Seguimiento Grupo
+F-08
+SCR-19 Seguimiento
+Clic en &apos;Exportar Reporte&apos;
+Slide-up modal
+SCR-21 Exportar Reporte → Descarga archivo
+F-09
+SCR-25 Dashboard Admin
+Clic en &apos;Gestión Usuarios&apos;
+Fade-in
+SCR-27 Gestión Usuarios
+F-10
+SCR-27 Gestión Users
+Clic en &apos;+ Nuevo Usuario&apos;
+Modal slide-up
+SCR-28 Crear/Editar Usuario
+F-11
+Cualquier pantalla
+Clic en &apos;Salir&apos; del sidebar
+Fade-out + clear session
+SCR-01 Login
+
+9.14 Matriz Global de Trazabilidad — Todos los Entregables vs. RF, RNF y CU
+Esta matriz consolida todos los entregables del trabajo y muestra cuáles RF, RNF y CU cubre cada uno, permitiendo verificar cobertura completa.
+
+Entregable
+RF Cubiertos
+RNF Cubiertos
+CU Relacionados
+Descripción del Aporte
+E1 Tabla Contexto
+RF-001 a RF-023
+RNF-001 a RNF-015
+Todos
+Identifica 9 entidades externas con sus flujos de comunicación con el sistema.
+E2 Tabla Interacciones
+RF-001 a RF-023
+RNF-001 a RNF-015
+Todos
+Define qué envía y recibe cada entidad externa del sistema central.
+E3 DCA
+RF-001 a RF-023
+RNF-001 a RNF-015
+Todos
+Diagrama de contexto arquitectónico con sistema central y flujos de datos.
+E4 Arquetipos
+RF-001 a RF-023
+—
+Todos
+12 abstracciones del dominio en 5 capas semánticas. Base del diseño OO.
+E5 Componentes
+RF-001 a RF-023
+RNF-009,010,014
+Todos
+7 subsistemas lógicos con interfaces y dependencias. Arquitectura en capas.
+E6 Despliegue
+RF-001 a RF-023
+RNF-001,003,004,005,008,011,013
+CU-001,005
+7 nodos físicos con protocolos y artefactos. Justificado por RNF.
+E7 Dicc. Datos
+RF-001 a RF-023
+—
+Todos
+12 entidades con atributos abstractos y reglas de negocio formales.
+E8 MER Conceptual
+RF-001 a RF-023
+—
+Todos
+Entidades fuertes (9) y débiles (3). 15 relaciones con cardinalidades justificadas.
+E9 Modelo Relacional
+RF-001 a RF-023
+—
+Todos
+12 tablas con tipos de datos SQL, PK, FK y constraints completos.
+E10 Normalización
+RF-001 a RF-023
+—
+—
+8 cambios 1FN→2FN→3FN documentados con justificación formal.
+E11 Script DDL
+RF-001 a RF-023
+RNF-004,012,015
+—
+PostgreSQL 15: 12 tablas, 8 índices, constraints, seed data, vista.
+E12 Clases
+RF-001 a RF-023
+—
+Todos
+12 clases UML con atributos (visibilidad+tipo), métodos y relaciones.
+E13 Secuencias
+RF-005,016,017,018,019,022,023
+RNF-002,004,005,013
+CU-001,004,005
+3 diagramas de secuencia: Login · Actividad (CU-001) · Reporte.
+E14 Estados
+RF-004,005,007,012,015,016,017,018,020
+RNF-005,012
+CU-001,002,003
+3 diagramas: ACTIVIDAD (7 estados) · PROGRESO (5 estados) · USUARIO (5 estados).
+E15 Mapa Navegación
+RF-001 a RF-023
+RNF-009,010,014
+Todos
+35 pantallas con roles de acceso, flujos de navegación y RF asociados.
+E16 Wireframes
+RF-001 a RF-023
+RNF-009,010,014
+Todos
+6 pantallas en baja fidelidad con regiones, elementos y acciones disponibles.
+E17 Prototipo
+RF-001 a RF-023
+RNF-006,007,009,010,014
+Todos
+Paleta 10 colores · Tipografía Inter · 12 interacciones · 11 flujos conectados.
+
+10. RESULTADOS DE LOS PROMPTS DE APOYO
+La siguiente tabla documenta los prompts del documento &apos;Prompts de Apoyo — Trabajo Parcial N.° 1&apos; utilizados para construir cada entregable, indicando el rol asumido por la IA, el entregable generado y el resultado obtenido.
+
+#
+Prompt Utilizado
+Entregable Generado
+Rol IA
+Resultado Obtenido
+P-01
+Construcción de Casos de Uso (formato IEEE 830 / Pressman)
+CU-001 a CU-005
+Analista de requisitos experto en IE
+5 casos de uso completos: nombre (verbo+objeto), actores, precondiciones, flujo normal paso a paso, flujos alternativos y postcondiciones con trazabilidad RF.
+P-02
+Entregables 1, 2 y 3 — Tablas de Contexto, Interacciones y DCA
+E1-E3
+Arquitecto de software experto en diseño de sistemas
+Tabla de Contexto con 9 entidades externas clasificadas por tipo. Tabla de Interacciones con flujos bidireccionales. Descripción textual del DCA con justificación RF/RNF.
+P-03
+Entregable 4 — Diagrama de Arquetipos (análisis gramatical)
+E4
+Analista de software experto en modelado OO
+12 arquetipos en 5 capas semánticas mediante análisis gramatical de CU y ERS. 14 relaciones con cardinalidades. 4 sustantivos descartados justificados.
+P-04
+Entregable 5 — Diagrama de Componentes UML
+E5
+Arquitecto de software experto en UML
+7 subsistemas lógicos con arquetipos agrupados, interfaces expuestas y dependencias. Arquitectura en 3 capas justificada por RF.
+P-05
+Entregable 6 — Diagrama de Despliegue UML
+E6
+Arquitecto de infraestructura de software
+7 nodos físicos (Nginx, Node.js, PostgreSQL, S3, Monitoreo, CI/CD, Cliente). Protocolos definidos. Cada decisión justificada con RNF específicos.
+P-06
+Entregable 7 — Diccionario de Datos
+E7
+Analista de bases de datos experto en modelado conceptual
+12 fichas de entidades con descripción semántica, atributos abstractos y reglas de negocio. Correspondencia con RF y arquetipos documentada.
+P-07
+Entregable 8 — MER Conceptual
+E8
+Diseñador de bases de datos experto en modelado conceptual
+MER con 9 entidades fuertes y 3 débiles. 15 relaciones con nombre semántico y cardinalidad justificada. Identificación formal de entidades débiles con discriminador.
+P-08
+Entregables 9 y 10 — Modelo Relacional y Normalización 3FN
+E9-E10
+Experto en bases de datos relacionales y normalización
+12 tablas con tipos SQL, PK y FK. 8 cambios documentados: 3 en 1FN (ENUM→tablas auxiliares), 3 en 2FN (dependencias parciales), 4 en 3FN (campos calculados y transitivos).
+P-09
+Entregable 11 — Script DDL
+E11
+Experto en bases de datos (PostgreSQL)
+Script completo: 12 tablas con constraints reales, 8 índices de rendimiento, datos seed (roles, niveles, tipos) y vista v_progreso_completo.
+P-10
+Entregable 12 — Diagrama de Clases Detallado
+E12
+Diseñador de software experto en UML y POO
+12 clases con atributos (visibilidad +/-/#, tipo de dato), métodos derivados de verbos de CU y relaciones UML (asociación, composición, agregación).
+P-11
+Entregable 13 — Diagramas de Secuencia
+E13
+Analista de software experto en modelado dinámico UML
+3 diagramas: DS-01 Login (con bloqueo RNF-005), DS-02 Actividad CU-001 (con 3 flujos alternativos), DS-03 Reporte (con variantes PDF/Excel/asíncrono).
+P-12
+Entregable 14 — Diagrama de Estados
+E14
+Analista de software experto en modelado de comportamiento UML
+3 diagramas de estados: ACTIVIDAD (7 estados, 9 transiciones), PROGRESO_ESTUDIANTE (5 estados, 6 transiciones), USUARIO (5 estados, 8 transiciones).
+P-13
+Entregable 15 — Mapa de Navegación
+E15
+Diseñador UX/UI experto en arquitectura de información
+35 pantallas (SCR-01 a SCR-35) en 5 módulos con roles de acceso, pantallas de origen/destino y RF asociados por pantalla.
+P-14
+Entregable 16 — Wireframes Baja Fidelidad
+E16
+Diseñador UX experto en prototipado de baja fidelidad
+6 wireframes estructurales: Login, Dashboard Estudiante, Actividad Interactiva, Mi Progreso, Gestión Actividades (Docente), Gestión Usuarios (Admin).
+P-15
+Entregable 17 — Prototipo Interactivo
+E17
+Diseñador UI experto en prototipado de alta fidelidad
+Paleta de 10 tokens de color con semántica definida. Tipografía Inter + JetBrains Mono. 12 interacciones simuladas. 11 flujos de navegación conectados con animaciones.
+P-16
+Validación y corrección de Casos de Uso existentes
+CU-001 a CU-005
+Revisor experto en análisis de requisitos
+Verificación de formato verbo+objeto, flujos alternados actor-sistema, trazabilidad RF, completitud de postcondiciones y flujos alternativos relevantes.
+
+Todos los prompts están documentados en el archivo &apos;Prompts_Parcial1_Ingenieria_Software.docx&apos; entregado junto a este trabajo. Los resultados de cada prompt forman los entregables de las Fases 1 a 4 de este documento.
+
+DOCUMENTO COMPLETO — PARCIAL N.° 1
+Este documento integra la totalidad del trabajo del Parcial 1 de Ingeniería de Software, organizado según la estructura solicitada por la docente:
+
+• Secciones 1-6: Planteamiento, espina de pescado, alcance, objetivos y técnicas de elicitación.
+• Sección 7: 5 casos de uso (CU-001 a CU-005) con flujos completos.
+• Sección 8: 17 entregables de diseño en 4 fases con 14 diagramas embebidos.
+• Sección 9: 14 matrices de trazabilidad que conectan todos los elementos del trabajo.
+• Sección 10: Tabla de 16 prompts utilizados con sus resultados.
+
+Repositorio: https://github.com/DanielLondono0314/ingenieriadesoftware2
+
