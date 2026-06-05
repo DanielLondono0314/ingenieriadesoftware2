@@ -16,6 +16,15 @@ const Usuario = sequelize.define('usuario', {
   id_rol: { type: DataTypes.INTEGER, allowNull: false },
   id_nivel: { type: DataTypes.INTEGER },
   fecha_registro: { type: DataTypes.DATE, allowNull: false, defaultValue: DataTypes.NOW },
+  // E14-DE03 — ciclo de vida del usuario
+  estado: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    defaultValue: 'activo',
+    validate: {
+      isIn: [['pendiente', 'activo', 'bloqueado_temporal', 'inactivo', 'eliminado_logico']],
+    },
+  },
 });
 
 const hashIfNeeded = async (user) => {
@@ -25,9 +34,11 @@ const hashIfNeeded = async (user) => {
   }
 };
 
+// CU-001/CU-002 | RF-004 | RNF-004 | E12-Usuario.registrar() — nunca se guarda texto plano
 Usuario.beforeCreate(hashIfNeeded);
 Usuario.beforeUpdate(hashIfNeeded);
 
+// CU-001 | RF-005 | E12-Usuario.autenticar(pwd): bool · E13-Login
 Usuario.prototype.verificarContrasena = function (plain) {
   return bcrypt.compare(plain, this.contrasena);
 };

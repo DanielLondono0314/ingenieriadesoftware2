@@ -19,6 +19,7 @@
 | id_rol | INT | FK → ROL, NOT NULL | Rol asignado — determina permisos |
 | id_nivel | INT | FK → NIVEL_EDUCATIVO, NULL | Nivel educativo (aplica a estudiantes) |
 | fecha_registro | TIMESTAMP | NOT NULL, DEFAULT NOW() | Fecha y hora de creación |
+| estado | VARCHAR(20) | NOT NULL, DEFAULT 'activo', CHECK IN (5 estados) | Ciclo de vida E14-DE03: pendiente/activo/bloqueado_temporal/inactivo/eliminado_logico |
 
 **Reglas de negocio:** correo UNIQUE · contrasena=hash bcrypt · 1 rol exacto · desactivación sin borrar historial
 

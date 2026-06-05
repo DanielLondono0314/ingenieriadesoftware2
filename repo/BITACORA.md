@@ -31,6 +31,89 @@
 | 2 | 2026-04-25 | Base de datos creada desde DDL, 12 modelos ORM con asociaciones (FKs y aliases) | ✅ Completo |
 | 3 | 2026-05-02 | CRUD de tablas maestras (ROL, NIVEL_EDUCATIVO, TIPO_CONTENIDO, TIPO_ACTIVIDAD, INSTITUCION) + DECISIONES.md con 4 entradas | ✅ Completo |
 | 4 | 2026-05-09 | CRUD de tablas transaccionales (USUARIO, MATRICULA, MODULO, ACTIVIDAD, PROGRESO_ESTUDIANTE, HISTORIAL_PRACTICA, REPORTE) con FKs activas | ✅ Completo |
+| 5 | 2026-05-16 | Trazabilidad Diseño→Código en todo el backend + 2 reglas de negocio (capa de servicios, E14-DE02/DE03) | ✅ Completo |
+
+---
+
+## Entradas (formato obligatorio)
+
+## Entrada #01 — 2026-04-17
+**¿Qué hice?** Inicialicé el framework Express + Sequelize, creé la estructura `src/`
+(config, models, routes, middleware, utils) basada en el Diagrama de Componentes (E5) y dejé
+el servidor corriendo localmente con `GET /api/health`. README y primera bitácora.
+**¿Qué problema encontré?** Sequelize pluralizaba los nombres de tabla y rompía el mapeo con
+el DDL (E11), que usa nombres en singular y MAYÚSCULAS.
+**¿Cómo lo resolví?** Configuré `freezeTableName: true` y `define` con el nombre exacto de
+cada tabla, dejando el esquema en manos del DDL.
+**¿Usé IA? Sí** — Pedí el esqueleto de `server.js`; ajusté el orden de los middlewares
+(el `errorHandler` debe ir al final) y el `404` antes del handler de errores.
+
+## Entrada #02 — 2026-04-25
+**¿Qué hice?** Ejecuté el DDL para crear la base de datos y modelé las 12 entidades ORM con
+sus asociaciones (E9-E10): FK, `onDelete: CASCADE` y alias (`docente`, `estudiante`, `autor`)
+para los dos FK que apuntan a USUARIO.
+**¿Qué problema encontré?** Al haber dos FK desde MODULO/ACTIVIDAD hacia USUARIO, Sequelize
+generaba un alias ambiguo y los `include` fallaban.
+**¿Cómo lo resolví?** Declaré cada `belongsTo` con `as:` explícito y usé el mismo alias en los
+`include` de las rutas.
+**¿Usé IA? Sí** — Generé el borrador de las asociaciones; corregí los `foreignKey` para que
+coincidieran con los nombres de columna `snake_case` del DDL (p. ej. `id_generado_por`).
+
+## Entrada #03 — 2026-05-02
+**¿Qué hice?** CRUD de las 5 tablas maestras mediante un factory genérico
+(`buildCrudRouter`) y hash de contraseñas con bcrypt en hooks del modelo USUARIO (RNF-004).
+Documenté 4 decisiones en DECISIONES.md.
+**¿Qué problema encontré?** El hash se recalculaba en cada `update`, aunque la contraseña no
+cambiara.
+**¿Cómo lo resolví?** Apliqué el hash solo cuando `user.changed('contrasena')` y oculté el
+campo con un `toJSON()` que lo elimina de la respuesta.
+**¿Usé IA? No** — Lo implementé directo apoyándome en la documentación de Sequelize.
+
+## Entrada #04 — 2026-05-09
+**¿Qué hice?** CRUD de las 7 tablas transaccionales con sus FK activas y `include` de
+relaciones. Verifiqué en consola que las maestras se resuelven desde las transaccionales.
+**¿Qué problema encontré?** El `POST /api/usuarios` devolvía 500 al violar el `UNIQUE` de
+`correo` sin un mensaje claro.
+**¿Cómo lo resolví?** Centralicé el manejo en `errorHandler` y validé `isEmail` en el modelo;
+queda pendiente mapear el error de Sequelize a un 409.
+**¿Usé IA? Sí** — Pedí ejemplos de `include` anidado; ajusté los alias para que no chocaran
+con los del modelo.
+
+## Entrada #05 — 2026-05-16
+**¿Qué hice?** Añadí la **trazabilidad Diseño→Código**: cada ruta y método de negocio lleva
+un comentario `// CU | RF | E12/E13/E14` que lo vincula con el diseño, y completé las
+respuestas obligatorias del README.
+**¿Qué problema encontré?** Reflexión: el CRUD genérico cumple las semanas 3-4 pero todavía
+no hay reglas de negocio (evaluar actividad, completar progreso, no borrar historial), que el
+diseño sí define en E12/E14.
+**¿Cómo lo resolví?** Lo dejé identificado como el siguiente bloque de trabajo (capa de
+servicios) para cumplir las semanas 5-6.
+**¿Usé IA? Sí** — Para revisar que los comentarios de trazabilidad apuntaran al RF/CU correcto
+según las matrices M1 y M9.
+
+## Entrada #06 — 2026-05-16
+**¿Qué hice?** Implementé 2 reglas de negocio en una capa de servicios (`src/services/`):
+(1) `POST /progresos/:id/completar` con la transición `en_progreso → completado` (E14-DE02) y
+(2) `DELETE /usuarios/:id` que protege el historial académico (E14-DE03). Agregué clases de
+error (`NotFoundError`/`ConflictError`/`BusinessRuleError`) para devolver 404/409/422.
+**¿Qué problema encontré?** El router CRUD genérico ya definía `DELETE /usuarios/:id`, así que
+mi override no se ejecutaba.
+**¿Cómo lo resolví?** Monté las rutas de negocio **antes** del `buildCrudRouter` en
+`routes/index.js`, aprovechando que Express resuelve por orden de declaración.
+**¿Usé IA? Sí** — Generé el borrador de los servicios; ajusté que `puntaje_maximo` se leyera
+del `include` de Actividad y validé los nombres de columna `snake_case`.
+
+## Entrada #07 — 2026-05-16
+**¿Qué hice?** Para que la Regla 2 fuera fiel a E14-DE03, añadí la columna `estado` a USUARIO
+(DDL E11 + modelo) con los 5 estados del ciclo de vida y convertí el `DELETE /usuarios/:id` en
+una desactivación lógica (`activo → inactivo`) que conserva el historial.
+**¿Qué problema encontré?** El borrado físico (409 si tenía historial) no representaba el
+estado INACTIVO del diagrama; faltaba dónde guardar ese estado.
+**¿Cómo lo resolví?** Agregué `estado VARCHAR(20)` con `CHECK`/`isIn`, default `'activo'`, y el
+servicio ahora hace `save()` del nuevo estado en vez de `destroy()`. Documenté el cambio de
+esquema en DECISIONES (D-006).
+**¿Usé IA? Sí** — Para revisar que el `CHECK` del DDL y el `isIn` del modelo listaran los
+mismos 5 estados de E14-DE03.
 
 ---
 
@@ -42,3 +125,4 @@
 | 2025-04-14 | Eliminar modulos_completados del esquema (3FN) | E10-normalizacion-3FN.md · E11-script-DDL.sql |
 | 2025-04-14 | Crear tabla NIVEL_EDUCATIVO (1FN) | E9-modelo-relacional.md · E11-script-DDL.sql |
 | 2025-04-21 | Añadir campo codigo_nie a NIVEL_EDUCATIVO | E7-diccionario-datos.md · E9-modelo-relacional.md |
+| 2026-05-16 | Añadir columna `estado` a USUARIO (ciclo de vida E14-DE03) | E7-diccionario-datos.md · E11-script-DDL.sql · src/models/Usuario.js |

@@ -1,0 +1,157 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "IA-K12 Backend - Trabajo Parcial 1",
+  "dateExported": "2026-06-05T05:00:00.000Z",
+  "version": "1.2",
+  "folders": [
+    { "_id": "fld-1-lecturas", "name": "1. Lecturas (GET)", "containerId": "", "created": "2026-06-05T05:00:00.000Z", "sortNum": 10000 },
+    { "_id": "fld-2-base", "name": "2. Crear datos base", "containerId": "", "created": "2026-06-05T05:00:00.000Z", "sortNum": 20000 },
+    { "_id": "fld-3-regla1", "name": "3. Regla 1 - Completar (E14-DE02)", "containerId": "", "created": "2026-06-05T05:00:00.000Z", "sortNum": 30000 },
+    { "_id": "fld-4-regla2", "name": "4. Regla 2 - Soft-delete (E14-DE03)", "containerId": "", "created": "2026-06-05T05:00:00.000Z", "sortNum": 40000 }
+  ],
+  "requests": [
+    {
+      "_id": "req-01", "colId": "col-iak12", "containerId": "fld-1-lecturas", "name": "GET health",
+      "url": "http://localhost:3000/api/health", "method": "GET", "sortNum": 10000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-02", "colId": "col-iak12", "containerId": "fld-1-lecturas", "name": "GET roles",
+      "url": "http://localhost:3000/api/roles", "method": "GET", "sortNum": 11000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-03", "colId": "col-iak12", "containerId": "fld-1-lecturas", "name": "GET niveles-educativos",
+      "url": "http://localhost:3000/api/niveles-educativos", "method": "GET", "sortNum": 12000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-04", "colId": "col-iak12", "containerId": "fld-1-lecturas", "name": "GET tipos-contenido",
+      "url": "http://localhost:3000/api/tipos-contenido", "method": "GET", "sortNum": 13000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-05", "colId": "col-iak12", "containerId": "fld-1-lecturas", "name": "GET tipos-actividad",
+      "url": "http://localhost:3000/api/tipos-actividad", "method": "GET", "sortNum": 14000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-06", "colId": "col-iak12", "containerId": "fld-1-lecturas", "name": "GET usuarios",
+      "url": "http://localhost:3000/api/usuarios", "method": "GET", "sortNum": 15000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-07", "colId": "col-iak12", "containerId": "fld-2-base", "name": "POST usuario estudiante (id 1)",
+      "url": "http://localhost:3000/api/usuarios", "method": "POST", "sortNum": 20000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Gomez\",\n  \"correo\": \"ana@colegio.edu.co\",\n  \"contrasena\": \"secreto123\",\n  \"id_rol\": 1,\n  \"id_nivel\": 1\n}", "form": [] }
+    },
+    {
+      "_id": "req-08", "colId": "col-iak12", "containerId": "fld-2-base", "name": "POST usuario docente (id 2)",
+      "url": "http://localhost:3000/api/usuarios", "method": "POST", "sortNum": 21000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{\n  \"nombre\": \"Luis\",\n  \"apellido\": \"Paez\",\n  \"correo\": \"luis@colegio.edu.co\",\n  \"contrasena\": \"clave123\",\n  \"id_rol\": 2\n}", "form": [] }
+    },
+    {
+      "_id": "req-09", "colId": "col-iak12", "containerId": "fld-2-base", "name": "POST institucion (id 1)",
+      "url": "http://localhost:3000/api/instituciones", "method": "POST", "sortNum": 22000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{\n  \"nombre\": \"Colegio San Jose\",\n  \"municipio\": \"Medellin\",\n  \"tipo\": \"Oficial\"\n}", "form": [] }
+    },
+    {
+      "_id": "req-10", "colId": "col-iak12", "containerId": "fld-2-base", "name": "POST modulo (id 1)",
+      "url": "http://localhost:3000/api/modulos", "method": "POST", "sortNum": 23000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{\n  \"titulo\": \"Intro a IA\",\n  \"descripcion\": \"Conceptos basicos de inteligencia artificial\",\n  \"id_tipo_contenido\": 1,\n  \"id_nivel\": 1,\n  \"id_docente\": 2,\n  \"activo\": true\n}", "form": [] }
+    },
+    {
+      "_id": "req-11", "colId": "col-iak12", "containerId": "fld-2-base", "name": "POST actividad (id 1, max 100)",
+      "url": "http://localhost:3000/api/actividades", "method": "POST", "sortNum": 24000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{\n  \"titulo\": \"Quiz IA\",\n  \"descripcion\": \"Quiz inicial del modulo\",\n  \"id_tipo_actividad\": 1,\n  \"id_modulo\": 1,\n  \"id_docente\": 2,\n  \"instrucciones\": \"Responde las preguntas\",\n  \"criterio_evaluacion\": \"Numero de respuestas correctas\",\n  \"puntaje_maximo\": 100\n}", "form": [] }
+    },
+    {
+      "_id": "req-12", "colId": "col-iak12", "containerId": "fld-2-base", "name": "POST progreso (id 1, en_progreso)",
+      "url": "http://localhost:3000/api/progresos", "method": "POST", "sortNum": 25000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{\n  \"id_estudiante\": 1,\n  \"id_actividad\": 1\n}", "form": [] }
+    },
+    {
+      "_id": "req-13", "colId": "col-iak12", "containerId": "fld-3-regla1", "name": "POST completar puntaje 999 => 422",
+      "url": "http://localhost:3000/api/progresos/1/completar", "method": "POST", "sortNum": 30000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{ \"puntaje\": 999 }", "form": [] }
+    },
+    {
+      "_id": "req-14", "colId": "col-iak12", "containerId": "fld-3-regla1", "name": "POST completar puntaje 85 => 200",
+      "url": "http://localhost:3000/api/progresos/1/completar", "method": "POST", "sortNum": 31000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{ \"puntaje\": 85 }", "form": [] }
+    },
+    {
+      "_id": "req-15", "colId": "col-iak12", "containerId": "fld-3-regla1", "name": "POST re-completar 50 => 409",
+      "url": "http://localhost:3000/api/progresos/1/completar", "method": "POST", "sortNum": 32000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{ \"puntaje\": 50 }", "form": [] }
+    },
+    {
+      "_id": "req-16", "colId": "col-iak12", "containerId": "fld-4-regla2", "name": "POST usuario desechable (id 3)",
+      "url": "http://localhost:3000/api/usuarios", "method": "POST", "sortNum": 40000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
+      "body": { "type": "json", "raw": "{\n  \"nombre\": \"Test\",\n  \"apellido\": \"Borrar\",\n  \"correo\": \"test@colegio.edu.co\",\n  \"contrasena\": \"x12345\",\n  \"id_rol\": 1\n}", "form": [] }
+    },
+    {
+      "_id": "req-17", "colId": "col-iak12", "containerId": "fld-4-regla2", "name": "DELETE usuario 3 => 200 inactivo",
+      "url": "http://localhost:3000/api/usuarios/3", "method": "DELETE", "sortNum": 41000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-18", "colId": "col-iak12", "containerId": "fld-4-regla2", "name": "GET usuarios (3 ya no aparece)",
+      "url": "http://localhost:3000/api/usuarios", "method": "GET", "sortNum": 42000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-19", "colId": "col-iak12", "containerId": "fld-4-regla2", "name": "GET usuario 3 por id (sigue accesible)",
+      "url": "http://localhost:3000/api/usuarios/3", "method": "GET", "sortNum": 43000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-20", "colId": "col-iak12", "containerId": "fld-4-regla2", "name": "DELETE usuario 3 de nuevo => 409",
+      "url": "http://localhost:3000/api/usuarios/3", "method": "DELETE", "sortNum": 44000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-21", "colId": "col-iak12", "containerId": "fld-4-regla2", "name": "DELETE Ana (id 1) - historial se conserva",
+      "url": "http://localhost:3000/api/usuarios/1", "method": "DELETE", "sortNum": 45000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    },
+    {
+      "_id": "req-22", "colId": "col-iak12", "containerId": "fld-4-regla2", "name": "GET progreso 1 (sigue completado tras desactivar a Ana)",
+      "url": "http://localhost:3000/api/progresos/1", "method": "GET", "sortNum": 46000,
+      "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
+      "headers": [], "params": [], "body": { "type": "none", "raw": "", "form": [] }
+    }
+  ],
+  "settings": {}
+}

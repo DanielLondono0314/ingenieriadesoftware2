@@ -14,6 +14,37 @@ Plataforma web educativa que enseña conceptos de **Inteligencia Artificial a es
 
 ---
 
+## Documentación Obligatoria — Respuestas
+
+**¿Qué módulo implementas?**
+El módulo de **Contenido Educativo y Seguimiento del Aprendizaje**: gestión de módulos
+temáticos de IA, actividades interactivas, el progreso de cada estudiante sobre esas
+actividades y el historial de práctica por módulo, sobre la base de usuarios/roles e
+instituciones.
+
+**¿Qué tablas cubre tu módulo?**
+Las 12 entidades del modelo 3FN (E9-E11):
+- *Maestras:* `ROL`, `NIVEL_EDUCATIVO`, `TIPO_CONTENIDO`, `TIPO_ACTIVIDAD`, `INSTITUCION`.
+- *Transaccionales:* `USUARIO`, `MATRICULA`, `MODULO`, `ACTIVIDAD`, `PROGRESO_ESTUDIANTE`,
+  `HISTORIAL_PRACTICA`, `REPORTE`.
+
+**¿Qué framework elegiste y por qué?**
+**Node.js 18 + Express 4 + Sequelize 6** sobre PostgreSQL 15. Se eligió porque Sequelize
+permite mapear los modelos a las tablas ya creadas por el DDL (E11) y declarar las
+asociaciones con alias (`docente`, `estudiante`, `autor`) que reflejan los FK duplicados
+hacia `USUARIO`. Se descartó Prisma (su migración inicial exigía ajustes manuales en cada
+FK con alias) y TypeORM (curva más alta para los plazos). Detalle completo en
+[DECISIONES.md](DECISIONES.md) (D-001).
+
+**¿Cómo ejecutar el proyecto?**
+Ver la sección [Cómo correr el backend](#cómo-correr-el-backend) más abajo.
+
+**¿Cuál es el repositorio de tu compañero?**
+El trabajo se desarrolla en un **repositorio compartido** con el compañero Daniel Londoño:
+`https://github.com/DanielLondono0314/ingenieriadesoftware2`
+
+---
+
 ## Estructura del Repositorio
 
 ```
@@ -84,6 +115,15 @@ API disponible en `http://localhost:3000/api`. Health check: `GET /api/health`.
 | Reportes | transaccional | `/api/reportes` |
 
 Cada recurso expone `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id`.
+
+### Reglas de negocio implementadas
+
+Además del CRUD, hay endpoints con lógica de negocio (capa `src/services/`):
+
+| Endpoint | Regla | Respaldo de diseño |
+|---|---|---|
+| `POST /api/progresos/:id/completar` | Completar una actividad: valida la transición `en_progreso → completado`, impide re-completar (`409`) y verifica que el puntaje no supere el `puntaje_maximo` (`422`). | E12 `ProgresoEstudiante.completar()` · E14-DE02 |
+| `DELETE /api/usuarios/:id` | Desactivación lógica (soft-delete): pasa `estado` de `activo → inactivo` sin borrar físicamente, conservando el historial académico. `409` si ya está inactivo. | E12 `Usuario.desactivar()` · E14-DE03 ("el historial NUNCA se borra") |
 
 ---
 

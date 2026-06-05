@@ -65,3 +65,40 @@ Bitácora de decisiones de arquitectura e implementación tomadas durante la pro
 - ✅ Toda la capa CRUD cabe en un archivo de ~70 líneas en lugar de 12 archivos.
 - ✅ Mejorar el manejo de errores o validación se hace en un solo lugar.
 - ⚠️ La lógica especializada (autenticar al estudiante en `/progresos`, cálculo de `tiempo_empleado` en `/historiales`) tendrá que reemplazar el router genérico cuando llegue su semana.
+
+---
+
+## D-005 · Capa de servicios + clases de error para las reglas de negocio
+
+**Fecha:** 2026-05-16
+**Estado:** Aceptada
+
+**Contexto.** Las semanas 5-6 exigen reglas de negocio que el CRUD genérico no cubre. El diseño ya las define: la transición de estado de `PROGRESO_ESTUDIANTE` (E14-DE02) y la regla clave de `USUARIO` de que el historial académico nunca se borra (E14-DE03). Meter esa lógica dentro del `crudFactory` lo contaminaría y rompería su carácter genérico.
+
+**Decisión.** Se crea una **capa de servicios** (`src/services/`) con un módulo por regla y un conjunto de **clases de error** (`src/errors/AppError.js`: `NotFoundError` 404, `ConflictError` 409, `BusinessRuleError` 422). El `errorHandler` traduce cualquier `AppError` a su `statusCode`. Las rutas de negocio se montan **antes** del router CRUD genérico para tener prioridad de match.
+
+**Artefacto de diseño que respalda la decisión.** E12 (Diagrama de Clases — métodos `completar()` / `desactivar()`), E13 (Secuencia) y E14 (Diagrama de Estados — DE-02 y DE-03).
+
+**Consecuencias.**
+- ✅ El CRUD genérico queda intacto; la lógica de negocio vive aislada y es testeable.
+- ✅ Los status HTTP son semánticos (409 para transición inválida, 422 para regla violada) en vez de `throw new Error` genérico.
+- ⚠️ Cada nueva regla obliga a un módulo de servicio y su ruta dedicada montada antes del genérico; hay que cuidar el orden de declaración en `routes/index.js`.
+
+---
+
+## D-006 · Columna `estado` en USUARIO para soft-delete (fidelidad a E14-DE03)
+
+**Fecha:** 2026-05-16
+**Estado:** Aceptada
+
+**Contexto.** La Regla 2 bloqueaba el borrado de un usuario con historial (409). El diagrama de estados E14-DE03 modela en realidad una **desactivación lógica** (`activo → inactivo`) que conserva el historial, pero la tabla `USUARIO` del DDL no tenía columna de estado para representarlo.
+
+**Decisión.** Se añade la columna `estado VARCHAR(20)` a `USUARIO` (DDL E11 y modelo Sequelize) con `CHECK`/`isIn` sobre los 5 estados de E14-DE03 (`pendiente`, `activo`, `bloqueado_temporal`, `inactivo`, `eliminado_logico`) y `DEFAULT 'activo'`. `DELETE /usuarios/:id` deja de borrar físicamente y hace soft-delete (`estado = 'inactivo'`), devolviendo `200` con el usuario actualizado.
+
+**Artefacto de diseño que respalda la decisión.** E14-DE03 (Diagrama de Estados — USUARIO) y E12 `Usuario.desactivar()`.
+
+**Consecuencias.**
+- ✅ El backend refleja fielmente el ciclo de vida del usuario y el historial nunca se borra.
+- ✅ La columna deja preparado el resto del ciclo (bloqueo temporal, eliminado lógico) para futuras reglas.
+- ⚠️ Simplificación asumida: el registro crea el usuario directamente como `'activo'` (no `'pendiente'`); el flujo `registrar() → activar()` no se implementa en este parcial.
+- ✅ El listado `GET /usuarios` filtra por `estado` (oculta `inactivo`/`eliminado_logico`) vía la opción `listWhere` del `crudFactory`; `GET /usuarios/:id` sí permite consultar un inactivo (acceso administrativo).

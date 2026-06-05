@@ -58,7 +58,11 @@ CREATE TABLE USUARIO (
     contrasena      VARCHAR(255) NOT NULL,  -- Hash bcrypt — NUNCA texto plano (RNF-004)
     id_rol          INT NOT NULL REFERENCES ROL(id_rol),
     id_nivel        INT REFERENCES NIVEL_EDUCATIVO(id_nivel),
-    fecha_registro  TIMESTAMP NOT NULL DEFAULT NOW()
+    fecha_registro  TIMESTAMP NOT NULL DEFAULT NOW(),
+    -- Estados del ciclo de vida del usuario (E14-DE03). desactivar() → 'inactivo'
+    -- conserva el historial académico; nunca se borra físicamente.
+    estado          VARCHAR(20) NOT NULL DEFAULT 'activo'
+                    CHECK (estado IN ('pendiente','activo','bloqueado_temporal','inactivo','eliminado_logico'))
 );
 
 CREATE TABLE MATRICULA (
