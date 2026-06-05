@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -13,7 +14,12 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-app.get('/', (req, res) => {
+// Frontend (SPA estática): consola de gestión que consume el API /api.
+// E15-Mapa de Navegación · E16-Wireframes — capa de presentación del módulo.
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Metadatos del API (antes servía '/', ahora lo sirve el index.html de la SPA).
+app.get('/api', (req, res) => {
   res.json({
     nombre: 'IA-K12 Backend',
     descripcion: 'Plataforma de Alfabetización en IA para K-12 — Trabajo Parcial 1',

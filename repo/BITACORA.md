@@ -115,6 +115,22 @@ esquema en DECISIONES (D-006).
 **¿Usé IA? Sí** — Para revisar que el `CHECK` del DDL y el `isIn` del modelo listaran los
 mismos 5 estados de E14-DE03.
 
+## Entrada #08 — 2026-06-05
+**¿Qué hice?** Construí la capa de presentación (frontend SPA en `public/`, servida por Express):
+aula del estudiante (explorar módulos, realizar actividades con retroalimentación inmediata y ver
+progreso — CU-001) y panel del docente (CRUD de las entidades + reglas de negocio). Además, tras la
+revisión de la docente, incorporé las tablas `PREGUNTA` y `OPCION_RESPUESTA` (DDL E11 + modelos +
+rutas + endpoint anidado `GET /actividades/:id/preguntas`) para que las preguntas y su evaluación
+automática sean reales (CU-001 paso 5-6, RF-012, RF-016).
+**¿Qué problema encontró?** (1) El `CHECK` de `correo` y el `isEmail` del modelo rechazaban dominios
+con TLD no estándar (p. ej. `.k12`). (2) El reproductor de actividades dependía de un banco de
+preguntas en el cliente, incoherente con CU-001.
+**¿Cómo lo resolví?** (1) Usé dominios válidos (`@aula.edu.co`) al sembrar perfiles. (2) Modelé
+`PREGUNTA`/`OPCION_RESPUESTA` y conecté el frontend al endpoint real, dejando el banco local solo
+como respaldo. Documenté el cambio en DECISIONES (D-007) y actualicé E8/E11.
+**¿Usé IA? Sí** — Generé el andamiaje de la SPA y los modelos; ajusté las asociaciones aliased
+(`as: 'preguntas'`/`'opciones'`), el orden de las opciones y la trazabilidad de cada método.
+
 ---
 
 ## Correcciones Aplicadas
@@ -126,3 +142,4 @@ mismos 5 estados de E14-DE03.
 | 2025-04-14 | Crear tabla NIVEL_EDUCATIVO (1FN) | E9-modelo-relacional.md · E11-script-DDL.sql |
 | 2025-04-21 | Añadir campo codigo_nie a NIVEL_EDUCATIVO | E7-diccionario-datos.md · E9-modelo-relacional.md |
 | 2026-05-16 | Añadir columna `estado` a USUARIO (ciclo de vida E14-DE03) | E7-diccionario-datos.md · E11-script-DDL.sql · src/models/Usuario.js |
+| 2026-06-05 | Incorporar tablas PREGUNTA y OPCION_RESPUESTA (coherencia CU-001, D-007) | E8-modelo-entidad-relacion.md · E11-script-DDL.sql · src/models/Pregunta.js · src/models/OpcionRespuesta.js |

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IA-K12 · Consola de gestión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <!-- ── Barra lateral de navegación (E15) ─────────────────── -->
+    <aside class="sidebar">
+      <header class="brand">
+        <span class="brand__mark" aria-hidden="true">IA</span>
+        <span class="brand__text">
+          <strong>IA·K12</strong>
+          <small id="brand-sub">Aula de IA</small>
+        </span>
+      </header>
+
+      <nav class="nav" id="nav"><!-- generado por app.js --></nav>
+
+      <div class="identity" id="identity"><!-- generado por app.js --></div>
+
+      <footer class="sidebar__foot">
+        <span id="health-dot" class="dot dot--idle" aria-hidden="true"></span>
+        <span id="health-text" class="mono">verificando…</span>
+      </footer>
+    </aside>
+
+    <!-- ── Área principal ─────────────────────────────────────── -->
+    <main class="main" id="main">
+      <div class="loading">cargando…</div>
+    </main>
+  </div>
+
+  <!-- ── Drawer lateral (crear / editar) ──────────────────────── -->
+  <div class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__scrim" data-drawer-close></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <header class="drawer__head">
+        <h2 id="drawer-title" class="drawer__title">—</h2>
+        <button class="iconbtn" data-drawer-close aria-label="Cerrar">&times;</button>
+      </header>
+      <form class="form" id="drawer-form"><!-- generado por app.js --></form>
+    </section>
+  </div>
+
+  <!-- ── Diálogo de confirmación ─────────────────────────────── -->
+  <div class="confirm" id="confirm" aria-hidden="true">
+    <div class="confirm__scrim" data-confirm-cancel></div>
+    <div class="confirm__box" role="alertdialog" aria-labelledby="confirm-title">
+      <h3 id="confirm-title" class="confirm__title">¿Confirmar?</h3>
+      <p id="confirm-msg" class="confirm__msg"></p>
+      <div class="confirm__actions">
+        <button class="btn btn--ghost" data-confirm-cancel>Cancelar</button>
+        <button class="btn btn--danger" id="confirm-ok">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Notificaciones ──────────────────────────────────────── -->
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

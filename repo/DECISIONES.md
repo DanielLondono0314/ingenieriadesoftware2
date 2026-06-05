@@ -102,3 +102,27 @@ Bitácora de decisiones de arquitectura e implementación tomadas durante la pro
 - ✅ La columna deja preparado el resto del ciclo (bloqueo temporal, eliminado lógico) para futuras reglas.
 - ⚠️ Simplificación asumida: el registro crea el usuario directamente como `'activo'` (no `'pendiente'`); el flujo `registrar() → activar()` no se implementa en este parcial.
 - ✅ El listado `GET /usuarios` filtra por `estado` (oculta `inactivo`/`eliminado_logico`) vía la opción `listWhere` del `crudFactory`; `GET /usuarios/:id` sí permite consultar un inactivo (acceso administrativo).
+
+---
+
+## D-007 · Incorporar PREGUNTA y OPCION_RESPUESTA (cierre del CU-001)
+
+**Fecha:** 2026-06-05
+**Estado:** Aceptada
+
+**Contexto.** Durante la revisión, la docente detectó una incoherencia entre el diseño y el modelo de datos: CU-001 (paso 5 y flujo A2) habla de que el estudiante "envía una respuesta a una **pregunta**" y puede "reintentar máximo 3 veces **por pregunta**", y RF-016 plantea retroalimentación por pregunta; además el wireframe (E16) dibuja opciones de respuesta. Sin embargo, el MER (E8) modelaba `ACTIVIDAD` como un bloque monolítico con `criterio_evaluacion` en **texto libre**, sin entidad donde vivieran las preguntas ni sus opciones, lo que impedía la evaluación automática (CU-001 paso 6).
+
+**Decisión.** Se añaden dos entidades al modelo:
+- `PREGUNTA` (N:1 con `ACTIVIDAD`, `ON DELETE CASCADE`) con `enunciado`, `orden`, `puntaje`, `max_intentos` (materializa los reintentos de CU-001 A2) y `retroalimentacion`.
+- `OPCION_RESPUESTA` (N:1 con `PREGUNTA`, `ON DELETE CASCADE`) con `texto`, `es_correcta` y `orden`. La marca `es_correcta` reemplaza al criterio en texto libre y habilita la evaluación automática (RF-012, CU-001 paso 6).
+
+Se reflejan en DDL (E11), modelos Sequelize (`Pregunta`, `OpcionRespuesta`) con asociaciones aliased (`as: 'preguntas'`, `as: 'opciones'`), CRUD genérico (`/preguntas`, `/opciones`) y un endpoint de lectura anidada `GET /actividades/:id/preguntas`. El frontend del estudiante consume ese endpoint y conserva un banco local como respaldo para actividades aún sin preguntas.
+
+**Artefacto de diseño que respalda la decisión.** CU-001 (pasos 5-6, flujo A2), RF-012, RF-016, E16-Wireframes y la observación de revisión de la docente. Actualiza E7 (diccionario), E8 (MER) y E9-E10 (relacional).
+
+**Consecuencias.**
+- ✅ El caso de uso central (CU-001) queda coherente: hay dónde viven las preguntas y la evaluación es automática.
+- ✅ El docente puede crear preguntas y opciones reales desde el panel; el estudiante las responde de verdad.
+- ✅ `criterio_evaluacion` pasa de texto libre a opciones marcadas como correctas (RF-012 evaluable).
+- ⚠️ Pendiente para una versión posterior: una entidad puente `RESPUESTA_ESTUDIANTE` que registre qué opción eligió el estudiante y en qué intento (hoy el conteo de intentos no se persiste por estudiante).
+- ✅ La tabla `NOTIFICACION` sugerida (SCR-13 · DE-01) **sí se implementó** (DDL E11, modelo, ruta `/notificaciones`): se generan avisos al asignar una actividad (desde el constructor del docente) y al completar un módulo. Con esto quedan incorporadas las 3 tablas que sugirió la docente.

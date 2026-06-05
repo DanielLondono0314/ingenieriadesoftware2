@@ -4,7 +4,8 @@
 -- Repositorio: DanielLondono0314/ingenieriadesoftware2
 -- ============================================================
 
-DROP TABLE IF EXISTS REPORTE, HISTORIAL_PRACTICA, PROGRESO_ESTUDIANTE, ACTIVIDAD,
+DROP TABLE IF EXISTS NOTIFICACION, REPORTE, HISTORIAL_PRACTICA, PROGRESO_ESTUDIANTE,
+    OPCION_RESPUESTA, PREGUNTA, ACTIVIDAD,
     TIPO_ACTIVIDAD, MODULO, TIPO_CONTENIDO, MATRICULA, USUARIO,
     INSTITUCION, NIVEL_EDUCATIVO, ROL CASCADE;
 
@@ -97,6 +98,42 @@ CREATE TABLE ACTIVIDAD (
     fecha_creacion     TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
+-- ── Preguntas y Opciones (CU-001 paso 5/A2 · RF-012,RF-016) ──
+-- Incorporadas tras la observación de la docente: una ACTIVIDAD se
+-- compone de PREGUNTAs evaluables, y cada PREGUNTA ofrece OPCION_RESPUESTA
+-- marcadas como correctas (el criterio de evaluación deja de ser texto
+-- libre y se vuelve evaluable automáticamente). Ver DECISIONES D-007.
+
+CREATE TABLE PREGUNTA (
+    id_pregunta       SERIAL PRIMARY KEY,
+    id_actividad      INT NOT NULL REFERENCES ACTIVIDAD(id_actividad) ON DELETE CASCADE,
+    enunciado         TEXT NOT NULL,
+    orden             INT NOT NULL DEFAULT 1,
+    puntaje           NUMERIC(6,2) NOT NULL DEFAULT 1,
+    max_intentos      INT NOT NULL DEFAULT 3 CHECK (max_intentos > 0),  -- CU-001 A2
+    retroalimentacion TEXT
+);
+
+CREATE TABLE OPCION_RESPUESTA (
+    id_opcion    SERIAL PRIMARY KEY,
+    id_pregunta  INT NOT NULL REFERENCES PREGUNTA(id_pregunta) ON DELETE CASCADE,
+    texto        TEXT NOT NULL,
+    es_correcta  BOOLEAN NOT NULL DEFAULT FALSE,  -- reemplaza el criterio en texto libre
+    orden        INT NOT NULL DEFAULT 1
+);
+
+-- ── Notificaciones (SCR-13 · DE-01 ASIGNADA) ─────────────────
+-- Avisos por usuario (actividad asignada, módulo completado…). Propuesta de la
+-- docente incorporada. Ver DECISIONES D-007.
+CREATE TABLE NOTIFICACION (
+    id_notificacion SERIAL PRIMARY KEY,
+    id_usuario      INT NOT NULL REFERENCES USUARIO(id_usuario) ON DELETE CASCADE,
+    tipo            VARCHAR(40) NOT NULL,
+    mensaje         TEXT NOT NULL,
+    leida           BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha_creacion  TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
 -- ── Entidades de Seguimiento (Débiles) ───────────────────
 
 CREATE TABLE PROGRESO_ESTUDIANTE (
@@ -147,6 +184,9 @@ CREATE INDEX idx_progreso_est    ON PROGRESO_ESTUDIANTE(id_estudiante);
 CREATE INDEX idx_progreso_act    ON PROGRESO_ESTUDIANTE(id_actividad);
 CREATE INDEX idx_historial_est   ON HISTORIAL_PRACTICA(id_estudiante);
 CREATE INDEX idx_historial_mod   ON HISTORIAL_PRACTICA(id_modulo);
+CREATE INDEX idx_pregunta_act    ON PREGUNTA(id_actividad);
+CREATE INDEX idx_opcion_preg     ON OPCION_RESPUESTA(id_pregunta);
+CREATE INDEX idx_notif_usuario   ON NOTIFICACION(id_usuario);
 
 -- ── Seed Data ────────────────────────────────────────────
 

@@ -18,6 +18,16 @@
 | ACTIVIDAD | id_actividad | Ejercicio interactivo ejecutable |
 | REPORTE | id_reporte | Documento de progreso exportable |
 
+## Entidades de Contenido — incorporadas tras revisión (D-007)
+
+Añadidas para dar coherencia a CU-001 (responder/reintentar por pregunta) y a RF-012/RF-016. Son composiciones de `ACTIVIDAD` (si se elimina la actividad, sus preguntas y opciones desaparecen — `ON DELETE CASCADE`).
+
+| Entidad | PK | Depende de | Descripción |
+|---------|-----|-----------|-------------|
+| PREGUNTA | id_pregunta | ACTIVIDAD | Pregunta evaluable de una actividad; admite reintentos (`max_intentos`, CU-001 A2) |
+| OPCION_RESPUESTA | id_opcion | PREGUNTA | Opción de una pregunta; `es_correcta` reemplaza al criterio en texto libre (evaluación automática, CU-001 paso 6) |
+| NOTIFICACION | id_notificacion | USUARIO | Aviso por usuario (actividad asignada, módulo completado); SCR-13 · DE-01 |
+
 ## Entidades Débiles (3)
 
 | Entidad Débil | Depende de | Discriminador | Justificación |
@@ -45,3 +55,5 @@
 | REL-13 | es registrado en | MÓDULO — HISTORIAL_PRACTICA | 1:N | Un módulo aparece en el historial de muchos estudiantes. | RF-018 |
 | REL-14 | genera | USUARIO(Doc/Admin) — REPORTE | 1:N | Un docente o admin puede generar múltiples reportes. | RF-022,023 |
 | REL-15 | referenciada en | INSTITUCIÓN — REPORTE | 1:N | Una institución puede tener muchos reportes sobre ella. | RF-023 |
+| REL-16 | se compone de | ACTIVIDAD — PREGUNTA | 1:N | Composición: una actividad tiene varias preguntas; al borrarla, se borran. | RF-016 (D-007) |
+| REL-17 | ofrece | PREGUNTA — OPCION_RESPUESTA | 1:N | Composición: una pregunta ofrece varias opciones, una o más correctas. | RF-012 (D-007) |

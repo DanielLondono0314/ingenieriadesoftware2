@@ -26,6 +26,19 @@ router.delete('/usuarios/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// CU-001 paso 5 | RF-016 | E8-PREGUNTA/OPCION_RESPUESTA — preguntas de una
+// actividad con sus opciones, ordenadas. Alimenta el reproductor del estudiante.
+router.get('/actividades/:id/preguntas', async (req, res, next) => {
+  try {
+    const preguntas = await m.Pregunta.findAll({
+      where: { id_actividad: req.params.id },
+      include: [{ model: m.OpcionRespuesta, as: 'opciones' }],
+      order: [['orden', 'ASC'], [{ model: m.OpcionRespuesta, as: 'opciones' }, 'orden', 'ASC']],
+    });
+    res.json(preguntas);
+  } catch (err) { next(err); }
+});
+
 // ── Tablas maestras (Semana 3) ──────────────────────────────
 // CU-002 | RF-006 | E12-Rol · M9 — CRUD de roles y permisos
 router.use('/roles', buildCrudRouter(m.Rol));
@@ -113,5 +126,20 @@ router.use(
     ],
   })
 );
+
+// CU-001 | RF-016 | E8-PREGUNTA — preguntas evaluables de cada actividad
+router.use(
+  '/preguntas',
+  buildCrudRouter(m.Pregunta, { include: [{ model: m.OpcionRespuesta, as: 'opciones' }] })
+);
+
+// RF-012 | E8-OPCION_RESPUESTA — opciones (las correctas evalúan automáticamente)
+router.use(
+  '/opciones',
+  buildCrudRouter(m.OpcionRespuesta, { include: [{ model: m.Pregunta }] })
+);
+
+// SCR-13 · DE-01 | E8-NOTIFICACION — avisos por usuario
+router.use('/notificaciones', buildCrudRouter(m.Notificacion));
 
 module.exports = router;

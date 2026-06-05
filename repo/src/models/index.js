@@ -12,6 +12,9 @@ const Actividad = require('./Actividad');
 const ProgresoEstudiante = require('./ProgresoEstudiante');
 const HistorialPractica = require('./HistorialPractica');
 const Reporte = require('./Reporte');
+const Pregunta = require('./Pregunta');
+const OpcionRespuesta = require('./OpcionRespuesta');
+const Notificacion = require('./Notificacion');
 
 // USUARIO ── ROL / NIVEL_EDUCATIVO
 Rol.hasMany(Usuario, { foreignKey: 'id_rol' });
@@ -68,6 +71,17 @@ Reporte.belongsTo(Usuario, { foreignKey: 'id_generado_por', as: 'autor' });
 Institucion.hasMany(Reporte, { foreignKey: 'id_institucion' });
 Reporte.belongsTo(Institucion, { foreignKey: 'id_institucion' });
 
+// PREGUNTA ── ACTIVIDAD / OPCION_RESPUESTA  (CU-001 · RF-012,RF-016)
+Actividad.hasMany(Pregunta, { foreignKey: 'id_actividad', as: 'preguntas', onDelete: 'CASCADE' });
+Pregunta.belongsTo(Actividad, { foreignKey: 'id_actividad' });
+
+Pregunta.hasMany(OpcionRespuesta, { foreignKey: 'id_pregunta', as: 'opciones', onDelete: 'CASCADE' });
+OpcionRespuesta.belongsTo(Pregunta, { foreignKey: 'id_pregunta' });
+
+// NOTIFICACION ── USUARIO  (SCR-13 · DE-01)
+Usuario.hasMany(Notificacion, { foreignKey: 'id_usuario', onDelete: 'CASCADE' });
+Notificacion.belongsTo(Usuario, { foreignKey: 'id_usuario' });
+
 module.exports = {
   sequelize,
   Rol,
@@ -82,4 +96,7 @@ module.exports = {
   ProgresoEstudiante,
   HistorialPractica,
   Reporte,
+  Pregunta,
+  OpcionRespuesta,
+  Notificacion,
 };
