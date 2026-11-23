@@ -130,6 +130,10 @@ describe('RF-005 / RF-006 — autenticación y roles', () => {
     expect(h.body.id_estudiante).toBe(a.u.id_usuario); // se fuerza al dueño del token
     expect((await b.E.get('/api/historiales')).body.some((x) => x.id_historial === h.body.id_historial)).toBe(false);
     expect((await b.E.get(`/api/historiales/${h.body.id_historial}`)).status).toBe(403);
+    // RF-021: solo el administrador elimina historial (docente y estudiante → 403)
+    expect((await ctx.D.del(`/api/historiales/${h.body.id_historial}`)).status).toBe(403);
+    expect((await a.E.del(`/api/historiales/${h.body.id_historial}`)).status).toBe(403);
+    expect((await ctx.A.del(`/api/historiales/${h.body.id_historial}`)).status).toBe(204);
     const n = (await a.E.post('/api/notificaciones', { id_usuario: b.u.id_usuario, tipo: 't', mensaje: 'm' })).body;
     expect(n.id_usuario).toBe(a.u.id_usuario);
     expect((await b.E.get('/api/notificaciones')).body.some((x) => x.id_notificacion === n.id_notificacion)).toBe(false);

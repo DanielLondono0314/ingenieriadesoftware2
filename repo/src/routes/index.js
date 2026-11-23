@@ -52,7 +52,7 @@ router.use('/matriculas', crudRouter(matricula, { listar: STAFF, consultar: STAF
 router.use('/modulos', crudRouter(modulo, STAFF_ESCRIBE));
 router.use('/actividades', crudRouter(actividad, STAFF_ESCRIBE));
 router.use('/progresos', crudRouter(progreso, { crear: 'auth', modificar: STAFF, eliminar: STAFF }));
-router.use('/historiales', crudRouter(historial, { crear: 'auth', modificar: STAFF, eliminar: STAFF }));
+router.use('/historiales', crudRouter(historial, { crear: 'auth', modificar: STAFF, eliminar: [ADM] })); // RF-021: solo el administrador elimina historial
 router.use('/reportes', crudRouter(reporte, { listar: STAFF, consultar: STAFF, ...STAFF_ESCRIBE }));
 router.use('/preguntas', crudRouter(pregunta, STAFF_ESCRIBE));
 router.use('/opciones', crudRouter(opcion, STAFF_ESCRIBE));
