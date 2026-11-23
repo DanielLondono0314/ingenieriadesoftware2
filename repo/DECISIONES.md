@@ -55,7 +55,7 @@ Bitácora de decisiones de arquitectura e implementación tomadas durante la pro
 ## D-004 · CRUD genérico vía factory en lugar de un controlador por entidad
 
 **Fecha:** 2026-05-02
-**Estado:** Aceptada
+**Estado:** Reemplazada por D-009 (CRF-011)
 
 **Contexto.** Las 12 entidades del esquema requieren las mismas 5 operaciones REST (list, get, create, update, delete). Crear 12 controladores casi idénticos genera ~600 líneas redundantes y dificulta cambios transversales (paginación, validación, logging).
 
@@ -147,4 +147,26 @@ Se reflejan en DDL (E11), modelos Sequelize (`Pregunta`, `OpcionRespuesta`) con 
 **Consecuencias.**
 - ✅ Los cinco hallazgos quedan cubiertos por pruebas automatizadas.
 - ⚠️ Las pruebas requieren la BD `ia_k12` creada con el DDL y usan correos únicos por ejecución (no limpian los datos).
-- ⚠️ El frontend (`public/app.js`) aún envía el puntaje a `/completar`; migrarlo a `/responder` queda pendiente.
+- ✅ El frontend ya usa `/responder` (evaluación en el servidor); ver D-009.
+
+
+---
+
+## D-009 · Capa MVC con controladores, autenticación JWT y roles exigidos
+
+**Fecha:** 2026-11-23
+**Estado:** Aceptada (CRF-011, CRF-012, CRF-013)
+
+**Contexto.** La retroalimentación de construcción señaló que las rutas consultaban modelos directamente, que el factory CRUD citaba los mismos RF para todas las entidades y que ninguna ruta exigía sesión ni rol (RF-005, RF-006).
+
+**Decisión.**
+- **MVC:** Modelo = `src/models`, Vista = `public/`, Controlador = `src/controllers`, Rutas = `src/routes` (solo URL → middleware → controlador), Servicios = `src/services`. `crudController` reemplaza a `utils/crudFactory.js` y cada controlador declara el RF de cada operación (`rf`).
+- **Seguridad:** `src/middleware/auth.js` verifica el JWT (401) y `requerirRol` aplica la matriz por rol (403). Públicos: `POST /api/auth/login`, `GET /api/health` y `POST /api/usuarios` como autorregistro (fuerza rol estudiante). El estudiante solo accede a sus progresos, historiales y notificaciones.
+- **Interfaz:** pantalla SCR-01 (login) y SCR-02 (registro); el frontend guarda el token en `sessionStorage` y usa `/responder`.
+- **RF-021:** solo el administrador elimina historial.
+
+**Consecuencias.**
+- ✅ Trazabilidad RF → método → endpoint en el código (ver `docs/trazabilidad/M14-matriz-construccion.md`).
+- ⚠️ `GET /actividades/:id/preguntas` envía `es_correcta` al estudiante porque la interfaz da retroalimentación inmediata; mover esa decisión al servidor es trabajo futuro.
+- ⚠️ Roles 4 (Coordinador) y 5 (Directivo) sin permisos propios.
+- ⚠️ Desvío abierto (CRF-017): el docente también gestiona módulos, aunque HU-016 dice solo administrador.
