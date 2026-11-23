@@ -28,3 +28,7 @@ Colección importable con todos los casos de prueba del backend (CRUD + las 2 re
 | 4. Regla 2 — Soft-delete (E14-DE03) | desactivación lógica, filtro de inactivos y conservación del historial |
 
 > Base URL fija en la colección: `http://localhost:3000`. Si cambias el puerto, ajústalo en cada request.
+
+## Pruebas automatizadas
+
+`npm test` ejecuta Jest + Supertest (28 casos) contra la BD `ia_k12` creada con el DDL.

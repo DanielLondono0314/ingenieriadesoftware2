@@ -7,16 +7,19 @@ const morgan = require('morgan');
 const { sequelize } = require('./models');
 const apiRouter = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
+const { DIR: REPORTES_DIR } = require('./services/reporteService');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
 
 // Frontend (SPA estática): consola de gestión que consume el API /api.
 // E15-Mapa de Navegación · E16-Wireframes — capa de presentación del módulo.
 app.use(express.static(path.join(__dirname, '..', 'public')));
+// Archivos de reportes generados (CU-005, RNF-013)
+app.use('/reportes', express.static(REPORTES_DIR));
 
 // Metadatos del API (antes servía '/', ahora lo sirve el index.html de la SPA).
 app.get('/api', (req, res) => {
@@ -44,7 +47,7 @@ app.use(errorHandler);
 
 const PORT = Number(process.env.PORT) || 3000;
 
-(async () => {
+async function iniciar() {
   try {
     await sequelize.authenticate();
     console.log('[db] Conexión a PostgreSQL establecida');
@@ -54,4 +57,9 @@ const PORT = Number(process.env.PORT) || 3000;
   app.listen(PORT, () => {
     console.log(`[api] Escuchando en http://localhost:${PORT}`);
   });
-})();
+}
+
+// Solo arranca el servidor al ejecutar `node src/server.js`; en las pruebas se importa `app`.
+if (require.main === module) iniciar();
+
+module.exports = app;

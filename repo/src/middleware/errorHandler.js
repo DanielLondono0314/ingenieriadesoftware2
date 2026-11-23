@@ -5,7 +5,14 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({ error: err.name, mensaje: err.message });
   }
-  if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+  // Violación de UNIQUE (p. ej. correo duplicado) → 409 Conflict
+  if (err.name === 'SequelizeUniqueConstraintError') {
+    return res.status(409).json({
+      error: err.name,
+      detalles: err.errors.map((e) => ({ campo: e.path, mensaje: e.message })),
+    });
+  }
+  if (err.name === 'SequelizeValidationError') {
     return res.status(400).json({
       error: err.name,
       detalles: err.errors.map((e) => ({ campo: e.path, mensaje: e.message })),

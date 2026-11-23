@@ -65,7 +65,7 @@
       "url": "http://localhost:3000/api/instituciones", "method": "POST", "sortNum": 22000,
       "created": "2026-06-05T05:00:00.000Z", "modified": "2026-06-05T05:00:00.000Z",
       "headers": [{ "name": "Content-Type", "value": "application/json" }], "params": [],
-      "body": { "type": "json", "raw": "{\n  \"nombre\": \"Colegio San Jose\",\n  \"municipio\": \"Medellin\",\n  \"tipo\": \"Oficial\"\n}", "form": [] }
+      "body": { "type": "json", "raw": "{\n  \"nombre\": \"Colegio San Jose\",\n  \"municipio\": \"Medellin\",\n  \"tipo\": \"publica\"\n}", "form": [] }
     },
     {
       "_id": "req-10", "colId": "col-iak12", "containerId": "fld-2-base", "name": "POST modulo (id 1)",

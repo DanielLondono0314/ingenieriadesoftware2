@@ -5,6 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+    "test": "jest --runInBand --coverage",
     "dev": "nodemon src/server.js",
     "db:migrate": "psql \"$DATABASE_URL\" -f docs/diseño/fase2-datos/E11-script-DDL.sql"
   },
@@ -15,12 +16,27 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
     "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.0",
+    "pdfkit": "^0.13.0",
     "pg": "^8.12.0",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4"
+    "jest": "^30.5.2",
+    "nodemon": "^3.1.4",
+    "supertest": "^7.3.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "src/server.js"
+    ]
   }
 }

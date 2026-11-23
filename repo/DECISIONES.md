@@ -126,3 +126,25 @@ Se reflejan en DDL (E11), modelos Sequelize (`Pregunta`, `OpcionRespuesta`) con 
 - ✅ `criterio_evaluacion` pasa de texto libre a opciones marcadas como correctas (RF-012 evaluable).
 - ⚠️ Pendiente para una versión posterior: una entidad puente `RESPUESTA_ESTUDIANTE` que registre qué opción eligió el estudiante y en qué intento (hoy el conteo de intentos no se persiste por estudiante).
 - ✅ La tabla `NOTIFICACION` sugerida (SCR-13 · DE-01) **sí se implementó** (DDL E11, modelo, ruta `/notificaciones`): se generan avisos al asignar una actividad (desde el constructor del docente) y al completar un módulo. Con esto quedan incorporadas las 3 tablas que sugirió la docente.
+
+---
+
+## D-008 · Cierre de defectos y brechas detectados en la ejecución de pruebas
+
+**Fecha:** 2026-11-23
+**Estado:** Aceptada
+
+**Contexto.** La ejecución de la colección Thunder y de pruebas adicionales (documento, sección 13) detectó tres defectos (BUG-01 a BUG-03) y dos brechas (GAP-01, GAP-02), y la matriz de calidad ISO/IEC 25010 (sección 14) marcó RNF-005, RNF-011 y RNF-013 como "No cumple".
+
+**Decisión.**
+- **BUG-03 / RNF-005:** `POST /api/auth/login` con `bcrypt.compare`, token JWT, bloqueo de 15 min tras 5 intentos fallidos (`USUARIO.estado = 'bloqueado_temporal'`, E14-DE03) y registro en `logs/seguridad.log`. Los contadores de intentos viven en memoria para no modificar el DDL; si el servidor se reinicia, el bloqueo se levanta. Pendiente: proteger las rutas con un middleware que verifique el token.
+- **BUG-01:** `SequelizeUniqueConstraintError` se traduce a 409 (antes 400).
+- **BUG-02:** la colección Thunder usa `tipo: "publica"` (el DDL solo admite `publica`/`privada`).
+- **GAP-01:** `POST /api/progresos/:id/responder` evalúa en el servidor con `es_correcta` y calcula el puntaje (escalado a `puntaje_maximo`); el cliente ya no decide el puntaje.
+- **GAP-02 / RNF-013:** `POST /api/reportes/generar` crea el PDF o Excel real y registra el REPORTE; al completar una actividad se crea la NOTIFICACION automática.
+- **RNF-011:** pruebas de integración con Jest + Supertest (`npm test`), 28 casos, cobertura > 95 % de sentencias.
+
+**Consecuencias.**
+- ✅ Los cinco hallazgos quedan cubiertos por pruebas automatizadas.
+- ⚠️ Las pruebas requieren la BD `ia_k12` creada con el DDL y usan correos únicos por ejecución (no limpian los datos).
+- ⚠️ El frontend (`public/app.js`) aún envía el puntaje a `/completar`; migrarlo a `/responder` queda pendiente.
