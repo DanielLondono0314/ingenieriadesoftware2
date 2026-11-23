@@ -577,7 +577,7 @@ async function renderGate(modo = 'login') {
     let niveles = [];
     try { niveles = await api('GET', 'niveles-educativos'); } catch { /* sin nivel */ }
     main.innerHTML = `<div class="gate" style="max-width:480px">${head}
-      <h1 class="gate__title" style="font-size:32px">Crear cuenta de estudiante</h1>
+      <h1 class="gate__title" style="font-size:32px;margin-bottom:20px">Crear cuenta de estudiante</h1>
       <section class="gate__card"><form id="reg" class="gate__form">
         <input class="input" name="nombre" placeholder="Nombre" required>
         <input class="input" name="apellido" placeholder="Apellido" required>
@@ -585,7 +585,7 @@ async function renderGate(modo = 'login') {
         <input class="input" type="password" name="contrasena" placeholder="Contraseña (mín. 8 caracteres)" minlength="8" autocomplete="new-password" required>
         <select class="select" name="id_nivel"><option value="">Nivel (opcional)</option>${niveles.map((n) => `<option value="${n.id_nivel}">${esc(n.nombre_nivel)} (${esc(n.rango_grado)})</option>`).join('')}</select>
         <button class="btn btn--primary" type="submit">Registrarme</button>
-      </form><p class="gate__hint"><a href="#" id="to-login">← Ya tengo cuenta</a></p></section></div>`;
+      </form><p class="gate__hint"><a style="color:var(--accent-ink)" href="#" id="to-login">← Ya tengo cuenta</a></p></section></div>`;
     main.querySelector('#to-login').onclick = (e) => { e.preventDefault(); renderGate('login'); };
     main.querySelector('#reg').onsubmit = async (e) => {
       e.preventDefault();
@@ -601,7 +601,7 @@ async function renderGate(modo = 'login') {
   }
 
   main.innerHTML = `<div class="gate" style="max-width:480px">${head}
-    <h1 class="gate__title" style="font-size:32px">Iniciar sesión</h1>
+    <h1 class="gate__title" style="font-size:32px;margin-bottom:20px">Iniciar sesión</h1>
     <section class="gate__card">
       <form id="login" class="gate__form" novalidate>
         <input class="input" type="email" name="correo" placeholder="Correo" autocomplete="username" required>
@@ -609,7 +609,7 @@ async function renderGate(modo = 'login') {
         <div id="login-msg" class="gate__hint" role="alert" aria-live="polite"></div>
         <button class="btn btn--primary" type="submit" id="login-btn">Entrar</button>
       </form>
-      <p class="gate__hint"><a href="#" id="to-rec">Recuperar contraseña</a> · <a href="#" id="to-reg">Registrarse</a></p>
+      <p class="gate__hint" style="margin-top:14px"><a style="color:var(--accent-ink)" href="#" id="to-rec">Recuperar contraseña</a> · <a style="color:var(--accent-ink)" href="#" id="to-reg">Registrarse</a></p>
     </section>
     <p class="gate__foot mono">SCR-01 · RF-005 · 5 intentos fallidos bloquean la cuenta 15 min (RNF-005)</p></div>`;
   main.querySelector('#to-reg').onclick = (e) => { e.preventDefault(); renderGate('registro'); };
