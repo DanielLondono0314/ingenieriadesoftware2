@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const { sequelize } = require('./models');
 const apiRouter = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
+const { ROLES, autenticar, requerirRol } = require('./middleware/auth');
 const { DIR: REPORTES_DIR } = require('./services/reporteService');
 
 const app = express();
@@ -19,7 +20,7 @@ if (process.env.NODE_ENV !== 'test') app.use(morgan('dev'));
 // E15-Mapa de Navegación · E16-Wireframes — capa de presentación del módulo.
 app.use(express.static(path.join(__dirname, '..', 'public')));
 // Archivos de reportes generados (CU-005, RNF-013)
-app.use('/reportes', express.static(REPORTES_DIR));
+app.use('/reportes', autenticar, requerirRol(ROLES.DOCENTE, ROLES.ADMIN), express.static(REPORTES_DIR));
 
 // Metadatos del API (antes servía '/', ahora lo sirve el index.html de la SPA).
 app.get('/api', (req, res) => {

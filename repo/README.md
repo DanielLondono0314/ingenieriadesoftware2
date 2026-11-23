@@ -51,11 +51,15 @@ El trabajo se desarrolla en un **repositorio compartido** con el compañero Dani
 proyecto-DanielLondono/
 ├── src/                          # Backend Node.js + Express + Sequelize
 │   ├── config/database.js        # Conexión Sequelize → PostgreSQL
-│   ├── models/                   # 12 modelos ORM con asociaciones
-│   ├── routes/index.js           # CRUD REST de las 12 entidades
-│   ├── middleware/errorHandler.js
-│   ├── utils/crudFactory.js      # CRUD genérico reutilizable
+│   ├── models/                   # M — 15 modelos ORM con asociaciones
+│   ├── controllers/              # C — un controlador por recurso (+ crudController.js genérico)
+│   ├── routes/                   # solo enrutan: URL → middleware de acceso → controlador
+│   ├── services/                 # reglas de negocio (auth, evaluación, progreso, reportes)
+│   ├── middleware/               # auth.js (JWT + roles) y errorHandler.js
 │   └── server.js                 # Entry point del API
+├── public/                       # V — frontend SPA (SCR-01 login, estudiante, panel docente)
+├── scripts/seed-demo.js          # usuarios demo (npm run seed)
+├── tests/                        # Jest + Supertest
 ├── docs/
 │   ├── analisis/                 # Secciones 1-7 del trabajo
 │   ├── diseño/
@@ -73,6 +77,20 @@ proyecto-DanielLondono/
 ```
 
 ---
+
+## Arquitectura MVC
+
+| Capa | Carpeta | Responsabilidad |
+|---|---|---|
+| Modelo | `src/models` | Entidades Sequelize y asociaciones (DDL-first, sin `sync`). |
+| Vista | `public` | SPA estática que consume `/api` con JWT. |
+| Controlador | `src/controllers` | Un archivo por recurso (`usuarioController`, `moduloController`, `progresoController`…). `crudController.js` implementa listar/consultar/crear/modificar/eliminar y cada controlador declara el RF que origina cada operación (`rf`). |
+| Rutas | `src/routes` | Solo mapean URL + verbo → middleware de acceso por rol → método del controlador; no importan modelos. |
+| Servicios | `src/services` | Reglas de negocio reutilizables (login con bloqueo, evaluación, completar progreso, reportes). |
+
+Acceso (RF-005, RF-006): `POST /api/auth/login` devuelve un JWT; todas las rutas, salvo login, `GET /api/health` y el
+auto-registro `POST /api/usuarios`, exigen `Authorization: Bearer <token>`. 401 sin token, 403 sin el rol necesario.
+`npm run seed` crea 1 administrador, 1 docente y 2 estudiantes de prueba e imprime sus contraseñas solo en consola.
 
 ## Cómo correr el backend
 

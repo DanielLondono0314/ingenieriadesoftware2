@@ -25,7 +25,7 @@ const pill = (text, variant = 'neutral') => `<span class="pill pill--${variant}"
 async function api(method, path, body) {
   const res = await fetch('/api/' + path, {
     method,
-    headers: body ? { 'Content-Type': 'application/json' } : {},
+    headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(getToken() ? { Authorization: 'Bearer ' + getToken() } : {}) },
     body: body ? JSON.stringify(body) : undefined,
   });
   const text = await res.text();
@@ -36,16 +36,21 @@ async function api(method, path, body) {
       (data && (data.mensaje || data.error ||
         (data.detalles && data.detalles.map((d) => `${d.campo}: ${d.mensaje}`).join('; ')))) ||
       res.statusText;
+    // RF-005 — sesión vencida o inválida: se vuelve a SCR-01 (no aplica al propio login)
+    if (res.status === 401 && path !== 'auth/login' && getToken()) { clearIdentity(); navRole = null; setTimeout(router, 0); }
     const err = new Error(msg); err.status = res.status; throw err;
   }
   return data;
 }
 
-/* ── Identidad (sin auth en backend: perfil ligero local) ──── */
+/* ── Sesión (RF-005): JWT emitido por POST /api/auth/login ──── */
 const IDKEY = 'iak12_identity';
+const getToken = () => { const i = getIdentity(); return i && i.token; };
 const getIdentity = () => { try { return JSON.parse(localStorage.getItem(IDKEY)); } catch { return null; } };
 const setIdentity = (id) => localStorage.setItem(IDKEY, JSON.stringify(id));
 const clearIdentity = () => localStorage.removeItem(IDKEY);
+// Rol del backend: 1 estudiante · 2 docente · 3 administrador
+const roleOf = (idRol) => (idRol === 1 ? 'estudiante' : 'docente');
 
 /* ── Banco de preguntas (frontend) ────────────────────────────
    El backend aún no modela PREGUNTA/OPCION_RESPUESTA (gap señalado
@@ -268,7 +273,7 @@ async function renderActividad(actId) {
     // aún no tiene preguntas cargadas, cae al banco local (compatibilidad).
     const preguntasBE = await api('GET', `actividades/${actId}/preguntas`);
     const questions = preguntasBE.length
-      ? preguntasBE.map((p) => ({ q: p.enunciado, intentos: p.max_intentos || 3, retro: p.retroalimentacion, opts: (p.opciones || []).map((o) => ({ texto: o.texto, correcta: o.es_correcta })) }))
+      ? preguntasBE.map((p) => ({ q: p.enunciado, intentos: p.max_intentos || 3, id: p.id_pregunta, retro: p.retroalimentacion, opts: (p.opciones || []).map((o) => ({ id: o.id_opcion, texto: o.texto, correcta: o.es_correcta })) }))
       : pickBank(tema).map((b) => ({ q: b.q, intentos: 3, retro: null, opts: b.o.map((t, i) => ({ texto: t, correcta: i === b.a })) }));
     let prog = progresos.find((p) => p.id_estudiante === id.userId && p.id_actividad === Number(actId));
     const yaHecho = prog && prog.estado === 'completado';
@@ -324,7 +329,7 @@ async function renderActividad(actId) {
       </div>
     </div>`;
 
-    const state = questions.map((qq) => ({ left: qq.intentos, done: false, correct: false }));
+    const state = questions.map((qq) => ({ left: qq.intentos, done: false, correct: false, chosen: null }));
     const refreshFinish = () => { document.getElementById('finish').disabled = !state.every((s) => s.done); };
 
     main.querySelectorAll('.qopt').forEach((btn) => {
@@ -333,6 +338,7 @@ async function renderActividad(actId) {
         const st = state[qi];
         if (st.done) return;
         const opt = questions[qi].opts[oi];
+        st.chosen = opt.id;
         const fb = main.querySelector(`[data-fb="${qi}"]`);
         const tries = main.querySelector(`[data-tries="${qi}"]`);
         const allOpts = main.querySelectorAll(`.qopt[data-q="${qi}"]`);
@@ -371,9 +377,17 @@ async function renderActividad(actId) {
       fbtn.disabled = true; fbtn.textContent = 'Guardando…';
       try {
         if (!prog) prog = await api('POST', 'progresos', { id_estudiante: id.userId, id_actividad: Number(actId) });
-        const updated = await api('POST', `progresos/${prog.id_progreso}/completar`, { puntaje: score });
+        let finalScore;
+        if (questions[0].id) {
+          // RF-016/RF-018 — la evaluación la calcula el servidor (es_correcta); el cliente solo envía lo elegido
+          const r = await api('POST', `progresos/${prog.id_progreso}/responder`, { respuestas: questions.map((qq, i) => ({ id_pregunta: qq.id, id_opcion: state[i].chosen })) });
+          finalScore = r.puntaje;
+        } else {
+          const updated = await api('POST', `progresos/${prog.id_progreso}/completar`, { puntaje: score });
+          finalScore = updated.puntaje_obtenido;
+        }
         const modInfo = await maybeCompleteModule(id.userId, act.id_modulo);  // RF-018
-        showActivityResult(act, mod, questions, marks, correct, total, updated.puntaje_obtenido, modInfo);
+        showActivityResult(act, mod, questions, marks, correct, total, finalScore, modInfo);
       } catch (err) {
         if (err.status === 409) { toast('Esta actividad ya estaba completada', 'info', '409'); renderActividad(actId); }
         else { toast(err.message, 'bad', err.status); fbtn.disabled = false; fbtn.textContent = 'Finalizar actividad'; }
@@ -553,74 +567,69 @@ async function renderNotificaciones() {
   } catch (err) { main.innerHTML = `<div class="learn"><div class="empty"><strong>Error</strong>${esc(err.message)}</div></div>`; }
 }
 
-/* ── Pantalla de identidad / acceso ───────────────────────── */
-async function renderGate() {
+/* ── SCR-01 Inicio de sesión (RF-005 · RNF-005) · SCR-02 Registro ─────── */
+async function renderGate(modo = 'login') {
   const main = document.getElementById('main');
   document.querySelector('.shell').classList.add('no-id');
-  main.innerHTML = `<div class="gate"><div class="loading">cargando…</div></div>`;
-  let estudiantes = [], niveles = [];
-  try {
-    const usuarios = await api('GET', 'usuarios');
-    estudiantes = usuarios.filter((u) => u.id_rol === 1);
-    niveles = await api('GET', 'niveles-educativos');
-  } catch { /* backend puede estar arrancando */ }
+  const head = `<div class="gate__brand"><span class="brand__mark">IA</span> <strong>IA·K12 — Aula de IA</strong></div>`;
 
-  const chips = estudiantes.map((u) =>
-    `<button class="profile" data-uid="${u.id_usuario}" data-name="${esc(u.nombre + ' ' + u.apellido)}">
-       <span class="profile__av">${esc((u.nombre[0] || '?').toUpperCase())}</span>
-       <span>${esc(u.nombre)} ${esc(u.apellido)}</span>
-     </button>`).join('');
-
-  main.innerHTML = `
-    <div class="gate">
-      <div class="gate__brand"><span class="brand__mark">IA</span> <strong>IA·K12 — Aula de IA</strong></div>
-      <h1 class="gate__title">Aprende Inteligencia Artificial,<br>paso a paso.</h1>
-      <p class="gate__sub">Elige cómo quieres entrar.</p>
-
-      <div class="gate__cols">
-        <section class="gate__card">
-          <h2>Soy estudiante</h2>
-          ${estudiantes.length ? `<p class="gate__hint">Elige tu perfil:</p><div class="profiles">${chips}</div><div class="gate__or">o crea uno nuevo</div>` : `<p class="gate__hint">Crea tu perfil para empezar:</p>`}
-          <form id="new-student" class="gate__form">
-            <input class="input" name="nombre" placeholder="Nombre" required>
-            <input class="input" name="apellido" placeholder="Apellido" required>
-            <select class="select" name="id_nivel">
-              <option value="">Nivel (opcional)</option>
-              ${niveles.map((n) => `<option value="${n.id_nivel}">${esc(n.nombre_nivel)} (${esc(n.rango_grado)})</option>`).join('')}
-            </select>
-            <button class="btn btn--primary" type="submit">Crear perfil y entrar</button>
-          </form>
-        </section>
-
-        <section class="gate__card gate__card--alt">
-          <h2>Soy docente o administrador</h2>
-          <p class="gate__hint">Accede al panel de gestión: crea módulos y actividades, haz seguimiento del grupo y administra el sistema.</p>
-          <button class="btn" id="enter-teacher">Entrar al panel</button>
-        </section>
-      </div>
-      <p class="gate__foot mono">Plataforma de Alfabetización en IA · K-12 — Trabajo Parcial 1</p>
-    </div>`;
-
-  main.querySelectorAll('[data-uid]').forEach((b) =>
-    b.onclick = () => enter({ role: 'estudiante', userId: Number(b.dataset.uid), name: b.dataset.name }));
-
-  document.getElementById('enter-teacher').onclick = () =>
-    enter({ role: 'docente', userId: null, name: 'Docente' });
-
-  document.getElementById('new-student').onsubmit = async (e) => {
-    e.preventDefault();
-    const f = e.target;
-    const payload = {
-      nombre: f.nombre.value.trim(), apellido: f.apellido.value.trim(),
-      correo: `${f.nombre.value.trim().toLowerCase().replace(/[^a-z0-9]/g, '')}.${Date.now()}@aula.edu.co`,
-      contrasena: 'aula1234', id_rol: 1,
+  if (modo === 'registro') {
+    let niveles = [];
+    try { niveles = await api('GET', 'niveles-educativos'); } catch { /* sin nivel */ }
+    main.innerHTML = `<div class="gate" style="max-width:480px">${head}
+      <h1 class="gate__title" style="font-size:32px;margin-bottom:20px">Crear cuenta de estudiante</h1>
+      <section class="gate__card"><form id="reg" class="gate__form">
+        <input class="input" name="nombre" placeholder="Nombre" required>
+        <input class="input" name="apellido" placeholder="Apellido" required>
+        <input class="input" type="email" name="correo" placeholder="Correo" autocomplete="username" required>
+        <input class="input" type="password" name="contrasena" placeholder="Contraseña (mín. 8 caracteres)" minlength="8" autocomplete="new-password" required>
+        <select class="select" name="id_nivel"><option value="">Nivel (opcional)</option>${niveles.map((n) => `<option value="${n.id_nivel}">${esc(n.nombre_nivel)} (${esc(n.rango_grado)})</option>`).join('')}</select>
+        <button class="btn btn--primary" type="submit">Registrarme</button>
+      </form><p class="gate__hint"><a style="color:var(--accent-ink)" href="#" id="to-login">← Ya tengo cuenta</a></p></section></div>`;
+    main.querySelector('#to-login').onclick = (e) => { e.preventDefault(); renderGate('login'); };
+    main.querySelector('#reg').onsubmit = async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const payload = { nombre: f.nombre.value.trim(), apellido: f.apellido.value.trim(), correo: f.correo.value.trim(), contrasena: f.contrasena.value };
+      if (f.id_nivel.value) payload.id_nivel = Number(f.id_nivel.value);
+      try {
+        await api('POST', 'usuarios', payload);               // el servidor fuerza rol estudiante
+        await iniciarSesion(payload.correo, payload.contrasena);
+      } catch (err) { toast(err.message, 'bad', err.status); }
     };
-    if (f.id_nivel.value) payload.id_nivel = Number(f.id_nivel.value);
-    try {
-      const u = await api('POST', 'usuarios', payload);
-      enter({ role: 'estudiante', userId: u.id_usuario, name: `${u.nombre} ${u.apellido}` });
-    } catch (err) { toast(err.message, 'bad', err.status); }
+    return;
+  }
+
+  main.innerHTML = `<div class="gate" style="max-width:480px">${head}
+    <h1 class="gate__title" style="font-size:32px;margin-bottom:20px">Iniciar sesión</h1>
+    <section class="gate__card">
+      <form id="login" class="gate__form" novalidate>
+        <input class="input" type="email" name="correo" placeholder="Correo" autocomplete="username" required>
+        <input class="input" type="password" name="contrasena" placeholder="Contraseña" autocomplete="current-password" required>
+        <div id="login-msg" class="gate__hint" role="alert" aria-live="polite"></div>
+        <button class="btn btn--primary" type="submit" id="login-btn">Entrar</button>
+      </form>
+      <p class="gate__hint" style="margin-top:14px"><a style="color:var(--accent-ink)" href="#" id="to-rec">Recuperar contraseña</a> · <a style="color:var(--accent-ink)" href="#" id="to-reg">Registrarse</a></p>
+    </section>
+    <p class="gate__foot mono">SCR-01 · RF-005 · 5 intentos fallidos bloquean la cuenta 15 min (RNF-005)</p></div>`;
+  main.querySelector('#to-reg').onclick = (e) => { e.preventDefault(); renderGate('registro'); };
+  main.querySelector('#to-rec').onclick = (e) => { e.preventDefault(); toast('Recuperar contraseña (SCR-03) aún no está implementado', 'info'); };
+  main.querySelector('#login').onsubmit = async (e) => {
+    e.preventDefault();
+    const f = e.target, msg = main.querySelector('#login-msg'), btn = main.querySelector('#login-btn');
+    if (!f.correo.value.trim() || !f.contrasena.value) { msg.textContent = 'Escribe tu correo y contraseña.'; return; }
+    btn.disabled = true; msg.textContent = '';
+    try { await iniciarSesion(f.correo.value.trim(), f.contrasena.value); }
+    catch (err) {
+      msg.textContent = err.status === 423 ? 'Cuenta bloqueada por intentos fallidos. Intenta de nuevo en 15 minutos.' : err.message;
+      if (err.status === 423) { f.querySelectorAll('input').forEach((i) => (i.disabled = true)); }
+      else btn.disabled = false;
+    }
   };
+}
+async function iniciarSesion(correo, contrasena) {
+  const { token, usuario } = await api('POST', 'auth/login', { correo, contrasena });
+  enter({ role: roleOf(usuario.id_rol), idRol: usuario.id_rol, userId: usuario.id_usuario, name: `${usuario.nombre} ${usuario.apellido}`, token });
 }
 function enter(identity) {
   setIdentity(identity);
@@ -913,7 +922,7 @@ async function renderReporteGen() {
       api('GET', 'usuarios'), api('GET', 'actividades'), api('GET', 'progresos'), api('GET', 'modulos'),
     ]);
     const estudiantes = usuarios.filter((u) => u.id_rol === 1);
-    const docente = usuarios.find((u) => u.id_rol === 2) || usuarios[0];
+    const docente = usuarios.find((u) => u.id_usuario === getIdentity().userId) || { id_usuario: getIdentity().userId };
     const actById = new Map(actividades.map((a) => [a.id_actividad, a]));
     const modById = new Map(modulos.map((m) => [m.id_modulo, m]));
     main.innerHTML = `<div class="view">
@@ -944,10 +953,13 @@ async function renderReporteGen() {
         const e = usuarios.find((u) => u.id_usuario === p.id_estudiante) || {};
         return { estudiante: `${e.nombre || ''} ${e.apellido || ''}`.trim(), modulo: m.titulo || '', actividad: a.titulo || '', puntaje: p.puntaje_obtenido, max: a.puntaje_maximo || '', fecha: String(p.fecha_realizacion || '').slice(0, 10) };
       });
-      let reporteId = '—';
+      let reporteId = '—', archivoUrl = null;
       try {
-        const rep = await api('POST', 'reportes', { tipo, rango, id_generado_por: docente.id_usuario, formato, contenido_url: `local://reporte-${Date.now()}.${formato === 'Excel' ? 'csv' : 'pdf'}` });
-        reporteId = rep.id_reporte; invalidateRef('reportes');
+        // RF-022/RF-023 — el servidor genera el PDF/Excel y registra el REPORTE
+        const body = { tipo, rango, formato, id_generado_por: docente.id_usuario };
+        if (tipo === 'individual') body.id_estudiante = Number(main.querySelector('#r-est').value);
+        const rep = await api('POST', 'reportes/generar', body);
+        reporteId = rep.id_reporte; archivoUrl = rep.contenido_url; invalidateRef('reportes');
         toast('Reporte registrado en REPORTE', 'ok', '201');
       } catch (err) { toast('No se registró: ' + err.message, 'bad', err.status); }
       const totalPts = rows.reduce((s, r) => s + Number(r.puntaje || 0), 0);
@@ -958,8 +970,17 @@ async function renderReporteGen() {
           <table class="report__tbl"><thead><tr><th>Estudiante</th><th>Módulo</th><th>Actividad</th><th>Puntaje</th><th>Fecha</th></tr></thead>
           <tbody>${rows.length ? rows.map((r) => `<tr><td>${esc(r.estudiante)}</td><td>${esc(r.modulo)}</td><td>${esc(r.actividad)}</td><td>${esc(r.puntaje)}/${esc(r.max)}</td><td>${esc(r.fecha)}</td></tr>`).join('') : '<tr><td colspan="5">Sin datos completados todavía.</td></tr>'}</tbody></table>
         </div>
-        <div class="learn__actions"><button class="btn btn--primary" id="r-dl">Descargar ${formato === 'Excel' ? 'CSV' : 'PDF'}</button></div>`;
-      out.querySelector('#r-dl').onclick = () => {
+        <div class="learn__actions"><button class="btn btn--primary" id="r-dl">Descargar ${formato === 'Excel' ? 'Excel (.xlsx)' : 'PDF'}</button></div>`;
+      out.querySelector('#r-dl').onclick = async () => {
+        if (archivoUrl) { // archivo real generado por el servidor (requiere sesión → fetch con token)
+          try {
+            const r = await fetch(archivoUrl, { headers: { Authorization: 'Bearer ' + getToken() } });
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const url = URL.createObjectURL(await r.blob()); const a = document.createElement('a');
+            a.href = url; a.download = archivoUrl.split('/').pop(); a.click(); URL.revokeObjectURL(url);
+          } catch (err) { toast('No se pudo descargar: ' + err.message, 'bad'); }
+          return;
+        }
         if (formato === 'Excel') {
           const csv = ['Estudiante,Modulo,Actividad,Puntaje,Maximo,Fecha', ...rows.map((r) => [r.estudiante, r.modulo, r.actividad, r.puntaje, r.max, r.fecha].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))].join('\n');
           const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
@@ -1098,11 +1119,11 @@ function buildChrome(id) {
   ident.innerHTML = `
     <div class="ident__row">
       <div class="ident__av">${esc((id.name[0] || '?').toUpperCase())}</div>
-      <div class="ident__info"><strong>${esc(id.name)}</strong><small>${id.role === 'estudiante' ? 'Estudiante' : 'Docente / Admin'}</small></div>
+      <div class="ident__info"><strong>${esc(id.name)}</strong><small>${id.idRol === 3 ? 'Administrador' : id.role === 'estudiante' ? 'Estudiante' : 'Docente'}</small></div>
     </div>
-    <button class="ident__switch" title="Cerrar sesión y elegir otra vista">⇆ Cambiar de perfil</button>`;
+    <button class="ident__switch" title="Cerrar sesión">⎋ Cerrar sesión</button>`;
   ident.querySelector('.ident__switch').onclick = async () => {
-    const ok = await confirmDialog('Cambiar de perfil', '¿Salir y volver a la pantalla de acceso para entrar como otro usuario o como docente?', 'Salir');
+    const ok = await confirmDialog('Cerrar sesión', '¿Salir y volver a la pantalla de inicio de sesión?', 'Salir');
     if (!ok) return;
     clearIdentity(); navRole = null; location.hash = ''; router();
   };

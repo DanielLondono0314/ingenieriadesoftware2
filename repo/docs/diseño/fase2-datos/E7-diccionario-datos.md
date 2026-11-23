@@ -1,7 +1,7 @@
 # E7 · Diccionario de Datos
 
 ## Descripción
-12 entidades con descripción semántica, atributos abstractos y reglas de negocio. Cada entidad corresponde a un arquetipo del Diagrama de Arquetipos (E4).
+15 entidades con descripción semántica, atributos abstractos y reglas de negocio. Cada entidad corresponde a un arquetipo del Diagrama de Arquetipos (E4).
 
 ---
 
@@ -194,3 +194,50 @@
 | id_institucion | INT | FK → INSTITUCIÓN, NULL | Institución referenciada |
 | formato | VARCHAR(10) | CHECK IN ('PDF','Excel') | Formato del archivo generado |
 | contenido_url | VARCHAR(500) | NOT NULL | URL S3 del archivo generado |
+
+---
+
+## PREGUNTA (ARQ-13) — D-007
+**Tipo:** Entidad fuerte — composición de ACTIVIDAD (revisión D-007)
+**RF relacionados:** RF-012, RF-016
+
+| Atributo | Tipo | Restricción | Descripción |
+|----------|------|-------------|-------------|
+| id_pregunta | SERIAL | PK, NOT NULL | Identificador único |
+| id_actividad | INT | FK → ACTIVIDAD, NOT NULL, ON DELETE CASCADE | Actividad a la que pertenece |
+| enunciado | TEXT | NOT NULL | Texto de la pregunta |
+| max_intentos | INT | NOT NULL, DEFAULT 3, CHECK (> 0) | Reintentos permitidos (CU-001 A2) |
+
+**Reglas de negocio:** si se elimina la actividad, sus preguntas se eliminan en cascada.
+
+---
+
+## OPCION_RESPUESTA (ARQ-14) — D-007
+**Tipo:** Entidad fuerte — composición de PREGUNTA (revisión D-007)
+**RF relacionados:** RF-012, RF-016
+
+| Atributo | Tipo | Restricción | Descripción |
+|----------|------|-------------|-------------|
+| id_opcion | SERIAL | PK, NOT NULL | Identificador único |
+| id_pregunta | INT | FK → PREGUNTA, NOT NULL, ON DELETE CASCADE | Pregunta a la que pertenece |
+| texto_opcion | TEXT | NOT NULL | Texto de la opción |
+| es_correcta | BOOLEAN | NOT NULL, DEFAULT FALSE | Reemplaza el criterio en texto libre para evaluación automática (CU-001 paso 6) |
+
+**Reglas de negocio:** una pregunta debe tener al menos una opción con es_correcta = TRUE; si se elimina la pregunta, sus opciones se eliminan en cascada.
+
+---
+
+## NOTIFICACION (ARQ-15) — D-007
+**Tipo:** Entidad fuerte
+**RF relacionados:** RF-019
+
+| Atributo | Tipo | Restricción | Descripción |
+|----------|------|-------------|-------------|
+| id_notificacion | SERIAL | PK, NOT NULL | Identificador único |
+| id_usuario | INT | FK → USUARIO, NOT NULL, ON DELETE CASCADE | Usuario destinatario |
+| tipo | VARCHAR(30) | NOT NULL, CHECK IN ('actividad_asignada','modulo_completado','sistema') | Tipo de aviso |
+| mensaje | TEXT | NOT NULL | Contenido del aviso |
+| leida | BOOLEAN | NOT NULL, DEFAULT FALSE | Estado de lectura |
+| fecha_creacion | TIMESTAMP | NOT NULL, DEFAULT NOW() | Fecha de generación |
+
+**Reglas de negocio:** ver SCR-13 (pantalla de notificaciones) y DE-01 (evento que las dispara).
