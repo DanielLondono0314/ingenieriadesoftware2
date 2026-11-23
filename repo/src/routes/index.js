@@ -4,6 +4,7 @@ const { buildCrudRouter } = require('../utils/crudFactory');
 const m = require('../models');
 const { completarProgreso } = require('../services/progresoService');
 const { desactivarUsuario } = require('../services/usuarioService');
+const { login } = require('../services/authService');
 const { responderActividad } = require('../services/evaluacionService');
 const { generarReporte } = require('../services/reporteService');
 
@@ -11,6 +12,14 @@ const router = Router();
 
 // ── Reglas de negocio (Semana 5-6) ──────────────────────────
 // Se montan ANTES de los routers CRUD genéricos para tener prioridad de match.
+
+// CU-002 | RF-005 | RNF-004,RNF-005 | E13-Login — autenticación con bloqueo por intentos
+router.post('/auth/login', async (req, res, next) => {
+  try {
+    const { token, usuario } = await login(req.body.correo, req.body.contrasena);
+    res.json({ token, usuario });
+  } catch (err) { next(err); }
+});
 
 // CU-001 pasos 5-6 | RF-016,RF-018 | evaluación automática en el servidor (es_correcta)
 router.post('/progresos/:id/responder', async (req, res, next) => {
