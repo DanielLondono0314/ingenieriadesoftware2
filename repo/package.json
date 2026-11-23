@@ -7,7 +7,8 @@
     "start": "node src/server.js",
     "test": "jest --runInBand --coverage",
     "dev": "nodemon src/server.js",
-    "db:migrate": "psql \"$DATABASE_URL\" -f docs/diseño/fase2-datos/E11-script-DDL.sql"
+    "db:migrate": "psql \"$DATABASE_URL\" -f docs/diseño/fase2-datos/E11-script-DDL.sql",
+    "seed": "node scripts/seed-demo.js"
   },
   "engines": {
     "node": ">=18"

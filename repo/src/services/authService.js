@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { Usuario } = require('../models');
 const { AppError } = require('../errors/AppError');
+const { secreto, expiracion } = require('../config/jwt');
 
 // CU-002 | RF-005 | RNF-004, RNF-005 | E12-Usuario.autenticar() · E13-Login · E14-DE03
 //
@@ -69,8 +70,8 @@ async function login(correo, contrasena) {
   intentos.delete(usuario.id_usuario);
   const token = jwt.sign(
     { sub: usuario.id_usuario, rol: usuario.id_rol },
-    process.env.JWT_SECRET || 'dev-secret-cambiar',
-    { expiresIn: process.env.JWT_EXPIRES || '8h' }
+    secreto(),
+    { expiresIn: expiracion() }
   );
   return { token, usuario };
 }

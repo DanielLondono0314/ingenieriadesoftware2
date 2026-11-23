@@ -31,4 +31,11 @@ class BusinessRuleError extends AppError {
   }
 }
 
-module.exports = { AppError, NotFoundError, ConflictError, BusinessRuleError };
+// 403 — autenticado pero sin permiso (RF-006)
+class ForbiddenError extends AppError {
+  constructor(mensaje = 'No tiene permisos sobre este recurso') {
+    super(mensaje, 403);
+  }
+}
+
+module.exports = { ForbiddenError, AppError, NotFoundError, ConflictError, BusinessRuleError };
